@@ -1,7 +1,7 @@
 // app.js
 App({
   globalData: {
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://43.165.166.249:8080',
     token: '',
     userInfo: null
   },
