@@ -6,6 +6,13 @@ App({
     userInfo: null
   },
 
+  // 获取完整图片URL
+  getImageUrl(path) {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return this.globalData.baseUrl + path;
+  },
+
   onLaunch() {
     // 检查登录状态
     this.checkLogin();

@@ -1,6 +1,7 @@
 // pages/index/index.js
 const api = require('../../utils/api.js');
 const util = require('../../utils/util.js');
+const app = getApp();
 
 Page({
   data: {
@@ -93,6 +94,7 @@ Page({
       if (res.code === 200) {
         const newProducts = (res.data.records || []).map(item => ({
           ...item,
+          bankLogoUrl: app.getImageUrl(item.bankLogoUrl),
           tags: item.tags ? item.tags.split(',') : [],
           isFavorited: false
         }));

@@ -1,6 +1,7 @@
 // pages/history/history.js
 const api = require('../../utils/api.js');
 const util = require('../../utils/util.js');
+const app = getApp();
 
 Page({
   data: {
@@ -21,6 +22,7 @@ Page({
         // 格式化时间
         const history = (res.data || []).map(item => ({
           ...item,
+          bankLogoUrl: app.getImageUrl(item.bankLogoUrl),
           createdAt: util.relativeTime(item.createdAt)
         }));
         this.setData({ history });

@@ -1,5 +1,6 @@
 // pages/favorites/favorites.js
 const api = require('../../utils/api.js');
+const app = getApp();
 
 Page({
   data: {
@@ -21,9 +22,11 @@ Page({
     try {
       const res = await api.getFavorites();
       if (res.code === 200) {
-        this.setData({
-          favorites: res.data || []
-        });
+        const favorites = (res.data || []).map(item => ({
+          ...item,
+          bankLogoUrl: app.getImageUrl(item.bankLogoUrl)
+        }));
+        this.setData({ favorites });
       }
     } catch (err) {
       console.error('加载收藏失败', err);
