@@ -37,7 +37,7 @@
     "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.24.0",
+  "libVersion": "3.7.0",
   "appid": "your-appid",
   "projectname": "credit-miniapp",
   "condition": {},
