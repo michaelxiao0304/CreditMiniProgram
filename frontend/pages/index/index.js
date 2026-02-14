@@ -81,9 +81,12 @@ Page({
     try {
       const params = {
         page: this.data.page,
-        size: this.data.size,
-        bankId: this.data.currentBankId || undefined
+        size: this.data.size
       };
+      // 只传递有效的 bankId
+      if (this.data.currentBankId) {
+        params.bankId = this.data.currentBankId;
+      }
 
       const res = await api.getProducts(params);
 
