@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: credit-miniapp
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/credit_miniapp?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 5000ms
+
+# JWT配置
+jwt:
+  secret: credit-miniapp-secret-key-change-in-production-2024
+  expiration: 604800000  # 7天
+
+# 微信小程序配置
+wechat:
+  appid: your-appid
+  secret: your-secret
+
+# 加密配置
+crypto:
+  key: creditminiapp16
+
+# 分页配置
+page:
+  default-size: 20
+  max-size: 100
+
+# Swagger配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    com.credit.miniapp: debug
+    org.springframework.web: info

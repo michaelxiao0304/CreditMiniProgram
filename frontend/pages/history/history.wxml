@@ -1,0 +1,45 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <view class="header" wx:if="{{history.length > 0}}">
+    <text class="clear-btn" bindtap="onClearHistory">清空历史</text>
+  </view>
+
+  <view class="product-list">
+    <block wx:for="{{history}}" wx:key="id">
+      <view class="product-card">
+        <view class="card-header">
+          <image class="bank-logo" src="{{item.bankLogoUrl || '/images/bank-default.png'}}" mode="aspectFit"></image>
+          <view class="product-info">
+            <view class="product-name">{{item.productName}}</view>
+            <view class="bank-name">{{item.bankName}}</view>
+          </view>
+        </view>
+        <view class="card-body">
+          <view class="info-row">
+            <view class="info-item">
+              <view class="info-label">额度</view>
+              <view class="info-value">{{item.amountRange || '-'}}</view>
+            </view>
+            <view class="info-item">
+              <view class="info-label">利率</view>
+              <view class="info-value">{{item.rateRange || '-'}}</view>
+            </view>
+          </view>
+          <view class="view-time">浏览时间：{{item.createdAt}}</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="empty-state" wx:if="{{history.length === 0 && !loading}}">
+      <text>暂无浏览历史</text>
+    </view>
+
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+  </view>
+
+  <view class="disclaimer">
+    <text>本平台仅提供信息展示，贷款审批以银行最终结果为准。</text>
+  </view>
+</view>

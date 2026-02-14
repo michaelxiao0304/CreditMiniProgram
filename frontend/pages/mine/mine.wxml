@@ -1,0 +1,123 @@
+<!--pages/mine/mine.wxml-->
+<view class="container">
+  <!-- 用户信息区 -->
+  <view class="user-section">
+    <view class="user-info" wx:if="{{isLoggedIn}}">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="user-detail">
+        <view class="nickname">{{userInfo.nickname || '用户'}}</view>
+      </view>
+    </view>
+    <view class="login-prompt" wx:else bindtap="onLogin">
+      <image class="avatar" src="/images/default-avatar.png" mode="aspectFill"></image>
+      <view class="login-text">点击登录</view>
+    </view>
+  </view>
+
+  <!-- 功能模块 -->
+  <view class="menu-section">
+    <!-- 我的收藏 -->
+    <view class="menu-item" bindtap="onNavigateToFavorites">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/heart.png" mode="aspectFit"></image>
+        <text class="menu-text">我的收藏</text>
+      </view>
+      <view class="menu-right">
+        <text class="menu-badge" wx:if="{{favoritesCount > 0}}">{{favoritesCount}}</text>
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- 浏览历史 -->
+    <view class="menu-item" bindtap="onNavigateToHistory">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/history.png" mode="aspectFit"></image>
+        <text class="menu-text">浏览历史</text>
+      </view>
+      <view class="menu-right">
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- 意见反馈 -->
+    <view class="menu-item" bindtap="onShowFeedback">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/feedback.png" mode="aspectFit"></image>
+        <text class="menu-text">意见反馈</text>
+      </view>
+      <view class="menu-right">
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- 关于我们 -->
+    <view class="menu-item" bindtap="onShowAbout">
+      <view class="menu-left">
+        <image class="menu-icon" src="/images/about.png" mode="aspectFit"></image>
+        <text class="menu-text">关于我们</text>
+      </view>
+      <view class="menu-right">
+        <text class="arrow">></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-section" wx:if="{{isLoggedIn}}">
+    <button class="logout-btn" bindtap="onLogout">退出登录</button>
+  </view>
+
+  <!-- 底部免责声明 -->
+  <view class="disclaimer">
+    <text>本平台仅提供信息展示服务，贷款审批结果以银行最终审核为准。</text>
+  </view>
+</view>
+
+<!-- 意见反馈弹窗 -->
+<view class="modal-mask" wx:if="{{showFeedbackModal}}" bindtap="onCloseFeedbackModal"></view>
+<view class="feedback-modal" wx:if="{{showFeedbackModal}}">
+  <view class="modal-title">意见反馈</view>
+  <view class="modal-body">
+    <textarea
+      class="feedback-input"
+      placeholder="请输入您的宝贵意见..."
+      maxlength="500"
+      bindinput="onFeedbackInput"
+      value="{{feedbackContent}}"
+    ></textarea>
+    <input
+      class="contact-input"
+      placeholder="联系方式（选填）"
+      bindinput="onContactInput"
+      value="{{feedbackContact}}"
+    />
+  </view>
+  <view class="modal-actions">
+    <button class="modal-btn cancel" bindtap="onCloseFeedbackModal">取消</button>
+    <button class="modal-btn confirm" bindtap="onSubmitFeedback">提交</button>
+  </view>
+</view>
+
+<!-- 关于我们弹窗 -->
+<view class="modal-mask" wx:if="{{showAboutModal}}" bindtap="onCloseAboutModal"></view>
+<view class="about-modal" wx:if="{{showAboutModal}}">
+  <view class="modal-title">关于我们</view>
+  <view class="modal-body">
+    <view class="about-content">
+      <view class="about-item">
+        <text class="label">版本号：</text>
+        <text class="value">v1.0.0</text>
+      </view>
+      <view class="about-item">
+        <text class="label">客服电话：</text>
+        <text class="value">400-888-8888</text>
+      </view>
+      <view class="about-desc">
+        本平台为贷款产品信息展示平台，不提供任何金融业务服务。贷款申请审批结果以银行最终审核为准。
+      </view>
+    </view>
+  </view>
+  <view class="modal-actions">
+    <button class="modal-btn confirm" bindtap="onCloseAboutModal">知道了</button>
+  </view>
+</view>

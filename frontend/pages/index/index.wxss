@@ -1,0 +1,290 @@
+/* pages/index/index.wxss */
+.container {
+  padding: 0;
+  padding-bottom: 20rpx;
+}
+
+/* 筛选栏 */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  padding: 20rpx 0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.filter-scroll {
+  white-space: nowrap;
+  padding: 0 20rpx;
+}
+
+.filter-item {
+  display: inline-block;
+  padding: 12rpx 28rpx;
+  margin-right: 16rpx;
+  border-radius: 32rpx;
+  font-size: 26rpx;
+  color: #666;
+  background: #f5f5f5;
+}
+
+.filter-item.active {
+  background: #1AAD19;
+  color: #fff;
+}
+
+/* 产品卡片 */
+.product-card {
+  background: #fff;
+  margin: 20rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.bank-logo {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+.product-info {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.product-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.bank-name {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.favorite-btn {
+  padding: 10rpx;
+}
+
+.favorite-btn image {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+/* 卡片主体 */
+.card-body {
+  padding: 24rpx;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+
+.info-item {
+  flex: 1;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.info-value {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+.info-value.primary {
+  color: #1AAD19;
+}
+
+/* 标签 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.tag {
+  padding: 8rpx 16rpx;
+  background: #e8f5e9;
+  color: #1AAD19;
+  font-size: 22rpx;
+  border-radius: 4rpx;
+}
+
+/* 详情展开 */
+.card-detail {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.detail-section {
+  margin-bottom: 20rpx;
+}
+
+.detail-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.detail-content {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* 卡片底部 */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background: #fafafa;
+}
+
+.expand-btn {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.expand-btn .arrow {
+  margin-left: 8rpx;
+  font-size: 20rpx;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.contact-btn {
+  padding: 16rpx 40rpx;
+  background: #1AAD19;
+  color: #fff;
+  border-radius: 40rpx;
+  font-size: 26rpx;
+}
+
+.contact-btn:active {
+  opacity: 0.8;
+}
+
+/* 加载状态 */
+.loading, .load-more {
+  padding: 40rpx;
+  text-align: center;
+  color: #999;
+  font-size: 24rpx;
+}
+
+/* 弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.contact-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.modal-title {
+  padding: 30rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-content {
+  padding: 40rpx 30rpx;
+}
+
+.consultant-info {
+  text-align: center;
+}
+
+.consultant-name {
+  font-size: 36rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+}
+
+.consultant-phone {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #1AAD19;
+  margin-bottom: 16rpx;
+}
+
+.consultant-bank {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.no-consultant {
+  text-align: center;
+  color: #999;
+  padding: 40rpx 0;
+}
+
+.modal-actions {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 30rpx;
+  text-align: center;
+  font-size: 30rpx;
+  border: none;
+  border-radius: 0;
+  line-height: 1;
+}
+
+.modal-btn.cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.modal-btn.call {
+  background: #1AAD19;
+  color: #fff;
+}
+
+.modal-btn::after {
+  border: none;
+}

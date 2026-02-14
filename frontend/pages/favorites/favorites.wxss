@@ -1,0 +1,96 @@
+/* pages/favorites/favorites.wxss */
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 20rpx;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.bank-logo {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+.product-info {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.product-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.bank-name {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.remove-btn {
+  padding: 12rpx 24rpx;
+  color: #ff4d4f;
+  font-size: 24rpx;
+  border: 1rpx solid #ff4d4f;
+  border-radius: 32rpx;
+}
+
+.card-body {
+  padding: 24rpx;
+}
+
+.info-row {
+  display: flex;
+}
+
+.info-item {
+  flex: 1;
+}
+
+.info-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.info-value {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #1AAD19;
+  margin-top: 8rpx;
+}
+
+.empty-state {
+  padding: 100rpx 0;
+  text-align: center;
+  color: #999;
+}
+
+.loading {
+  padding: 40rpx;
+  text-align: center;
+  color: #999;
+}
+
+.disclaimer {
+  padding: 30rpx;
+  text-align: center;
+  color: #999;
+  font-size: 24rpx;
+}

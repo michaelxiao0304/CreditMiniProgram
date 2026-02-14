@@ -1,0 +1,124 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 银行筛选 Tab -->
+  <view class="filter-bar">
+    <scroll-view scroll-x class="filter-scroll">
+      <view
+        class="filter-item {{currentBankId === 0 ? 'active' : ''}}"
+        bindtap="onBankChange"
+        data-id="0"
+      >
+        全部
+      </view>
+      <view
+        class="filter-item {{currentBankId === item.id ? 'active' : ''}}"
+        wx:for="{{banks}}"
+        wx:key="id"
+        bindtap="onBankChange"
+        data-id="{{item.id}}"
+      >
+        {{item.name}}
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 产品列表 -->
+  <view class="product-list">
+    <block wx:for="{{products}}" wx:key="id">
+      <view class="product-card" bindtap="onProductTap" data-id="{{item.id}}">
+        <!-- 卡片头部 -->
+        <view class="card-header">
+          <image class="bank-logo" src="{{item.bankLogoUrl || '/images/bank-default.png'}}" mode="aspectFit"></image>
+          <view class="product-info">
+            <view class="product-name">{{item.name}}</view>
+            <view class="bank-name">{{item.bankName}}</view>
+          </view>
+          <!-- 收藏按钮 -->
+          <view class="favorite-btn" catchtap="onFavoriteTap" data-id="{{item.id}}" data-index="{{index}}">
+            <image src="{{item.isFavorited ? '/images/heart-active.png' : '/images/heart.png'}}" mode="aspectFit"></image>
+          </view>
+        </view>
+
+        <!-- 卡片主要内容 -->
+        <view class="card-body">
+          <view class="info-row">
+            <view class="info-item">
+              <view class="info-label">额度</view>
+              <view class="info-value primary">{{item.amountRange}}</view>
+            </view>
+            <view class="info-item">
+              <view class="info-label">利率</view>
+              <view class="info-value primary">{{item.rateRange}}</view>
+            </view>
+          </view>
+
+          <!-- 标签 -->
+          <view class="tags" wx:if="{{item.tags}}">
+            <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="index">{{tag}}</text>
+          </view>
+
+          <!-- 展开详情 -->
+          <view class="card-detail" wx:if="{{expandedId === item.id}}">
+            <view class="detail-section">
+              <view class="detail-title">产品描述</view>
+              <view class="detail-content">{{item.description || '暂无描述'}}</view>
+            </view>
+            <view class="detail-section">
+              <view class="detail-title">申请条件</view>
+              <view class="detail-content">{{item.requirements || '暂无要求'}}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 卡片底部操作 -->
+        <view class="card-footer">
+          <view class="expand-btn" bindtap="onExpandTap" data-id="{{item.id}}">
+            <text>{{expandedId === item.id ? '收起详情' : '查看详情'}}</text>
+            <text class="arrow {{expandedId === item.id ? 'up' : ''}}">▼</text>
+          </view>
+          <view class="contact-btn" catchtap="onContactTap" data-id="{{item.id}}">联系顾问</view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 加载状态 -->
+    <view class="loading" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && products.length === 0}}">
+      <text>暂无产品数据</text>
+    </view>
+
+    <!-- 加载完成 -->
+    <view class="load-more" wx:if="{{!loading && products.length > 0 && hasMore}}">
+      <text>上拉加载更多</text>
+    </view>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="disclaimer">
+    <text>本平台仅提供信息展示，贷款审批以银行最终结果为准。具体政策以银行官方为准。</text>
+  </view>
+</view>
+
+<!-- 顾问联系方式弹窗 -->
+<view class="modal-mask" wx:if="{{showContactModal}}" bindtap="onCloseContactModal"></view>
+<view class="contact-modal" wx:if="{{showContactModal}}">
+  <view class="modal-title">联系顾问</view>
+  <view class="modal-content">
+    <view class="consultant-info" wx:if="{{consultant}}">
+      <view class="consultant-name">{{consultant.name}}</view>
+      <view class="consultant-phone">{{consultant.phone}}</view>
+      <view class="consultant-bank">{{consultant.bankName}}</view>
+    </view>
+    <view class="no-consultant" wx:else>
+      <text>暂无顾问信息</text>
+    </view>
+  </view>
+  <view class="modal-actions">
+    <button class="modal-btn cancel" bindtap="onCloseContactModal">关闭</button>
+    <button class="modal-btn call" bindtap="onCallConsultant" wx:if="{{consultant && consultant.phoneRaw}}">一键拨号</button>
+  </view>
+</view>
