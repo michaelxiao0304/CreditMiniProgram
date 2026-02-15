@@ -16,7 +16,7 @@ import java.util.UUID;
 public class FileService {
 
     // 配置上传目录
-    private static final String UPLOAD_DIR = "/tmp/credit-admin/uploads/";
+    private static final String UPLOAD_DIR = "/home/ubuntu/Code/CreditMiniProgram/uploads/";
     // 允许的图片格式
     private static final String[] ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"};
     // 最大文件大小 2MB

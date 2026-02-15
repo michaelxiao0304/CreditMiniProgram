@@ -22,6 +22,6 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 上传的图片文件 /images/xxx.png 映射到真实目录
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:/tmp/credit-admin/uploads/");
+                .addResourceLocations("file:/home/ubuntu/Code/CreditMiniProgram/uploads/");
     }
 }
