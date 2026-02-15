@@ -41,7 +41,7 @@ wechat:
 
 # 加密配置
 crypto:
-  key: creditminiapp16
+  key: creditminiapp123
 
 # 分页配置
 page:

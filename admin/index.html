@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款产品管理系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        #app { min-height: 100vh; }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .login-box {
+            width: 400px;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
+        }
+        .main-layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 200px;
+            background: #304156;
+            color: white;
+        }
+        .sidebar-logo {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #3d4d61;
+        }
+        .menu-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .menu-item:hover { background: #263445; }
+        .menu-item.active { background: #409eff; }
+        .main-content { flex: 1; display: flex; flex-direction: column; }
+        .header {
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .content { padding: 20px; flex: 1; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+        .toolbar { display: flex; gap: 10px; margin-bottom: 20px; }
+        /* Logo上传样式 */
+        .logo-upload { display: flex; flex-direction: column; align-items: center; }
+        .logo-uploader { width: 120px; height: 120px; border: 1px dashed #d9d9d9; border-radius: 6px; cursor: pointer; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .logo-uploader:hover { border-color: #409eff; }
+        .logo-uploader-icon { font-size: 28px; color: #8c939d; }
+        .logo-preview { width: 100%; height: 100%; object-fit: contain; }
+        .upload-tip { font-size: 12px; color: #999; margin-top: 8px; text-align: center; }
+        /* 银行Logo列 */
+        .bank-logo-img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; }
+        .bank-logo-placeholder { width: 40px; height: 40px; background: #f5f7fa; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; }
+        /* 银行卡片样式 */
+        .bank-toolbar { display: flex; justify-content: space-between; align-items: center; }
+        .bank-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 0; }
+        .bank-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); transition: transform 0.2s, box-shadow 0.2s; }
+        .bank-card:hover { transform: translateY(-4px); box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .bank-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .bank-card-logo { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; border: 1px solid #eee; }
+        .bank-card-logo-placeholder { width: 60px; height: 60px; background: #f5f7fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; }
+        .bank-card-body { margin-bottom: 15px; }
+        .bank-card-body h3 { margin: 0; font-size: 18px; color: #333; }
+        .bank-card-footer { display: flex; gap: 10px; justify-content: flex-end; }
+        .bank-card-add { border: 2px dashed #dcdfe6; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; min-height: 160px; color: #909399; }
+        .bank-card-add:hover { border-color: #409eff; color: #409eff; }
+        .bank-card-add-icon { font-size: 32px; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Page -->
+        <div v-if="!token" class="login-container">
+            <div class="login-box">
+                <h2 class="login-title">贷款产品管理系统</h2>
+                <el-form :model="loginForm" @submit.prevent="handleLogin">
+                    <el-form-item>
+                        <el-input v-model="loginForm.username" placeholder="用户名" size="large"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input v-model="loginForm.password" type="password" placeholder="密码" size="large"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" size="large" style="width: 100%;" @click="handleLogin" :loading="loginLoading">登录</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div v-else class="main-layout">
+            <div class="sidebar">
+                <div class="sidebar-logo">管理系统</div>
+                <div class="menu-item" :class="{ active: currentMenu === 'products' }" @click="currentMenu = 'products'">产品管理</div>
+                <div class="menu-item" :class="{ active: currentMenu === 'banks' }" @click="currentMenu = 'banks'">银行管理</div>
+                <div class="menu-item" :class="{ active: currentMenu === 'consultants' }" @click="currentMenu = 'consultants'">顾问管理</div>
+                <div class="menu-item" :class="{ active: currentMenu === 'feedback' }" @click="currentMenu = 'feedback'">意见反馈</div>
+                <div class="menu-item" @click="handleLogout">退出登录</div>
+            </div>
+            <div class="main-content">
+                <div class="header">
+                    <span>贷款产品管理系统</span>
+                    <span>{{ username }}</span>
+                </div>
+                <div class="content">
+                    <!-- Products -->
+                    <div v-if="currentMenu === 'products'">
+                        <div class="card">
+                            <div class="toolbar">
+                                <el-button type="primary" @click="showProductDialog()">新增产品</el-button>
+                                <el-select v-model="productBankFilter" placeholder="筛选银行" clearable style="width: 200px">
+                                    <el-option v-for="bank in banks" :key="bank.id" :label="bank.name" :value="bank.id"></el-option>
+                                </el-select>
+                                <el-button @click="loadProducts">刷新</el-button>
+                            </div>
+                            <el-table :data="products" border>
+                                <el-table-column prop="id" label="ID" width="60"></el-table-column>
+                                <el-table-column prop="name" label="产品名称"></el-table-column>
+                                <el-table-column prop="bankName" label="银行"></el-table-column>
+                                <el-table-column prop="amountRange" label="额度范围"></el-table-column>
+                                <el-table-column prop="rateRange" label="利率范围"></el-table-column>
+                                <el-table-column prop="status" label="状态" width="80">
+                                    <template #default="{ row }">
+                                        <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '上线' : '下线' }}</el-tag>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="180">
+                                    <template #default="{ row }">
+                                        <el-button size="small" @click="showProductDialog(row)">编辑</el-button>
+                                        <el-button size="small" :type="row.status === 1 ? 'danger' : 'success'" @click="toggleProductStatus(row)">
+                                            {{ row.status === 1 ? '下线' : '上线' }}
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+
+                    <!-- Banks -->
+                    <div v-if="currentMenu === 'banks'">
+                        <!-- 工具栏 -->
+                        <div class="card">
+                            <div class="bank-toolbar">
+                                <el-input v-model="bankSearch" placeholder="搜索银行名称" clearable style="width: 240px" @input="filterBanks">
+                                    <template #prefix>
+                                        <el-icon><Search /></el-icon>
+                                    </template>
+                                </el-input>
+                            </div>
+                        </div>
+                        <!-- 银行卡片网格 -->
+                        <div class="bank-grid">
+                            <div v-for="bank in filteredBanks" :key="bank.id" class="bank-card">
+                                <div class="bank-card-header">
+                                    <img v-if="bank.logoUrl" :src="getFullImageUrl(bank.logoUrl)" class="bank-card-logo">
+                                    <div v-else class="bank-card-logo-placeholder">暂无Logo</div>
+                                    <el-tag :type="bank.status === 1 ? 'success' : 'danger'" size="small">
+                                        {{ bank.status === 1 ? '上线' : '下线' }}
+                                    </el-tag>
+                                </div>
+                                <div class="bank-card-body">
+                                    <h3>{{ bank.name }}</h3>
+                                </div>
+                                <div class="bank-card-footer">
+                                    <el-button size="small" @click="showBankDialog(bank)">编辑</el-button>
+                                    <el-button size="small" type="danger" @click="deleteBank(bank)">删除</el-button>
+                                </div>
+                            </div>
+                            <!-- 新增卡片 -->
+                            <div class="bank-card bank-card-add" @click="showBankDialog()">
+                                <el-icon class="bank-card-add-icon"><Plus /></el-icon>
+                                <span>新增银行</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consultants -->
+                    <div v-if="currentMenu === 'consultants'">
+                        <div class="card">
+                            <div class="toolbar">
+                                <el-button type="primary" @click="showConsultantDialog()">新增顾问</el-button>
+                                <el-button @click="loadConsultants">刷新</el-button>
+                            </div>
+                            <el-table :data="consultants" border>
+                                <el-table-column prop="id" label="ID" width="60"></el-table-column>
+                                <el-table-column prop="name" label="姓名"></el-table-column>
+                                <el-table-column prop="bankName" label="所属银行"></el-table-column>
+                                <el-table-column prop="phoneMasked" label="联系电话"></el-table-column>
+                                <el-table-column prop="status" label="状态" width="80">
+                                    <template #default="{ row }">
+                                        <el-tag :type="row.status === 1 ? 'success' : 'danger'">{{ row.status === 1 ? '在职' : '离职' }}</el-tag>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column label="操作" width="150">
+                                    <template #default="{ row }">
+                                        <el-button size="small" @click="showConsultantDialog(row)">编辑</el-button>
+                                        <el-button size="small" type="danger" @click="deleteConsultant(row)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+
+                    <!-- Feedback -->
+                    <div v-if="currentMenu === 'feedback'">
+                        <div class="card">
+                            <div class="toolbar">
+                                <el-button @click="loadFeedbacks">刷新</el-button>
+                            </div>
+                            <el-table :data="feedbacks" border>
+                                <el-table-column prop="id" label="ID" width="60"></el-table-column>
+                                <el-table-column prop="content" label="反馈内容"></el-table-column>
+                                <el-table-column prop="contact" label="联系方式"></el-table-column>
+                                <el-table-column prop="createdAt" label="提交时间"></el-table-column>
+                                <el-table-column label="操作" width="100">
+                                    <template #default="{ row }">
+                                        <el-button size="small" type="danger" @click="deleteFeedback(row)">删除</el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Dialog -->
+        <el-dialog v-model="productDialogVisible" :title="editingProduct?.id ? '编辑产品' : '新增产品'" width="600px">
+            <el-form :model="productForm" label-width="100px">
+                <el-form-item label="产品名称">
+                    <el-input v-model="productForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="所属银行">
+                    <el-select v-model="productForm.bankId" placeholder="选择银行">
+                        <el-option v-for="bank in banks" :key="bank.id" :label="bank.name" :value="bank.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="最小额度">
+                    <el-input-number v-model="productForm.amountMin" :min="0"></el-input-number>
+                </el-form-item>
+                <el-form-item label="最大额度">
+                    <el-input-number v-model="productForm.amountMax" :min="0"></el-input-number>
+                </el-form-item>
+                <el-form-item label="最小利率(%)">
+                    <el-input-number v-model="productForm.rateMin" :min="0" :precision="2"></el-input-number>
+                </el-form-item>
+                <el-form-item label="最大利率(%)">
+                    <el-input-number v-model="productForm.rateMax" :min="0" :precision="2"></el-input-number>
+                </el-form-item>
+                <el-form-item label="标签">
+                    <el-input v-model="productForm.tags" placeholder="多个标签用逗号分隔"></el-input>
+                </el-form-item>
+                <el-form-item label="产品描述">
+                    <el-input v-model="productForm.description" type="textarea" rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="申请要求">
+                    <el-input v-model="productForm.requirements" type="textarea" rows="3"></el-input>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-radio-group v-model="productForm.status">
+                        <el-radio :value="1">上线</el-radio>
+                        <el-radio :value="0">下线</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="productDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveProduct">保存</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- Bank Dialog -->
+        <el-dialog v-model="bankDialogVisible" :title="editingBank?.id ? '编辑银行' : '新增银行'" width="500px">
+            <el-form :model="bankForm" label-width="80px">
+                <el-form-item label="银行名称">
+                    <el-input v-model="bankForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="Logo">
+                    <div class="logo-upload">
+                        <el-upload
+                            class="logo-uploader"
+                            :show-file-list="false"
+                            :before-upload="beforeLogoUpload"
+                            :http-request="uploadLogo"
+                            accept="image/jpeg,image/png,image/gif,image/webp">
+                            <img v-if="bankForm.logoUrl" :src="getFullImageUrl(bankForm.logoUrl)" class="logo-preview">
+                            <el-icon v-else class="logo-uploader-icon"><Plus /></el-icon>
+                        </el-upload>
+                        <div class="upload-tip">点击上传Logo，支持 JPG、PNG、GIF、WEBP，限制 2MB</div>
+                    </div>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-radio-group v-model="bankForm.status">
+                        <el-radio :value="1">上线</el-radio>
+                        <el-radio :value="0">下线</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="bankDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveBank">保存</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- Consultant Dialog -->
+        <el-dialog v-model="consultantDialogVisible" :title="editingConsultant?.id ? '编辑顾问' : '新增顾问'" width="400px">
+            <el-form :model="consultantForm" label-width="80px">
+                <el-form-item label="姓名">
+                    <el-input v-model="consultantForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="所属银行">
+                    <el-select v-model="consultantForm.bankId" placeholder="选择银行">
+                        <el-option v-for="bank in banks" :key="bank.id" :label="bank.name" :value="bank.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="手机号">
+                    <el-input v-model="consultantForm.phone"></el-input>
+                </el-form-item>
+                <el-form-item label="状态">
+                    <el-radio-group v-model="consultantForm.status">
+                        <el-radio :value="1">在职</el-radio>
+                        <el-radio :value="0">离职</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="consultantDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="saveConsultant">保存</el-button>
+            </template>
+        </el-dialog>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+    <script>
+        const { createApp, ref, reactive, onMounted, watch } = Vue;
+        const { ElMessage, ElMessageBox } = ElementPlus;
+
+        // ======== 配置区 ========
+        // 后端API地址（如果前后端分开部署，修改这里）
+        const API_BASE = 'http://43.165.166.249:8081/api/admin';
+        // =========================
+
+        const app = createApp({
+            setup() {
+                const token = ref(localStorage.getItem('admin_token') || '');
+                const username = ref(localStorage.getItem('admin_username') || '');
+                const loginForm = reactive({ username: '', password: '' });
+                const loginLoading = ref(false);
+                const currentMenu = ref('products');
+
+                const products = ref([]);
+                const banks = ref([]);
+                const bankSearch = ref('');
+                const filteredBanks = ref([]);
+                const consultants = ref([]);
+                const feedbacks = ref([]);
+                const productBankFilter = ref(null);
+
+                const productDialogVisible = ref(false);
+                const bankDialogVisible = ref(false);
+                const consultantDialogVisible = ref(false);
+
+                const editingProduct = ref(null);
+                const editingBank = ref(null);
+                const editingConsultant = ref(null);
+
+                const productForm = reactive({
+                    name: '', bankId: null, amountMin: 0, amountMax: 0,
+                    rateMin: 0, rateMax: 0, tags: '', description: '',
+                    requirements: '', status: 1
+                });
+
+                const bankForm = reactive({ name: '', logoUrl: '', status: 1 });
+                const consultantForm = reactive({ name: '', bankId: null, phone: '', status: 1 });
+
+                const getHeaders = () => ({ Authorization: `Bearer ${token.value}` });
+
+                const handleLogin = async () => {
+                    if (!loginForm.username || !loginForm.password) {
+                        ElMessage.warning('请输入用户名和密码');
+                        return;
+                    }
+                    loginLoading.value = true;
+                    try {
+                        const res = await fetch(`${API_BASE}/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(loginForm)
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            token.value = data.data.token;
+                            username.value = data.data.realName || data.data.username;
+                            localStorage.setItem('admin_token', token.value);
+                            localStorage.setItem('admin_username', username.value);
+                            loadAll();
+                        } else {
+                            ElMessage.error(data.msg || '登录失败');
+                        }
+                    } catch (e) {
+                        ElMessage.error('登录失败: ' + e.message);
+                    }
+                    loginLoading.value = false;
+                };
+
+                const handleLogout = () => {
+                    token.value = '';
+                    username.value = '';
+                    localStorage.removeItem('admin_token');
+                    localStorage.removeItem('admin_username');
+                };
+
+                const loadProducts = async () => {
+                    const res = await fetch(`${API_BASE}/products`, { headers: getHeaders() });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        products.value = data.data.records.map(p => ({
+                            ...p,
+                            amountRange: `${(p.amountMin/10000).toFixed(0)}万-${(p.amountMax/10000).toFixed(0)}万`,
+                            rateRange: `${p.rateMin}%-${p.rateMax}%`
+                        }));
+                        if (productBankFilter.value) {
+                            products.value = products.value.filter(p => p.bankId === productBankFilter.value);
+                        }
+                    }
+                };
+
+                const loadBanks = async () => {
+                    const res = await fetch(`${API_BASE}/banks`, { headers: getHeaders() });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        banks.value = data.data.records;
+                        filterBanks();
+                    }
+                };
+
+                const filterBanks = () => {
+                    if (!bankSearch.value) {
+                        filteredBanks.value = banks.value;
+                    } else {
+                        const keyword = bankSearch.value.toLowerCase();
+                        filteredBanks.value = banks.value.filter(bank =>
+                            bank.name.toLowerCase().includes(keyword)
+                        );
+                    }
+                };
+
+                const loadConsultants = async () => {
+                    const res = await fetch(`${API_BASE}/consultants`, { headers: getHeaders() });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        consultants.value = data.data;
+                    }
+                };
+
+                const loadFeedbacks = async () => {
+                    const res = await fetch(`${API_BASE}/feedback`, { headers: getHeaders() });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        feedbacks.value = data.data.records;
+                    }
+                };
+
+                const loadAll = () => {
+                    loadProducts();
+                    loadBanks();
+                    loadConsultants();
+                    loadFeedbacks();
+                };
+
+                // Products
+                const showProductDialog = (product = null) => {
+                    editingProduct.value = product;
+                    if (product) {
+                        Object.assign(productForm, {
+                            id: product.id,
+                            name: product.name,
+                            bankId: product.bankId,
+                            amountMin: product.amountMin,
+                            amountMax: product.amountMax,
+                            rateMin: product.rateMin,
+                            rateMax: product.rateMax,
+                            tags: product.tags,
+                            description: product.description,
+                            requirements: product.requirements,
+                            status: product.status
+                        });
+                    } else {
+                        Object.assign(productForm, {
+                            id: null, name: '', bankId: null, amountMin: 0, amountMax: 0,
+                            rateMin: 0, rateMax: 0, tags: '', description: '', requirements: '', status: 1
+                        });
+                    }
+                    productDialogVisible.value = true;
+                };
+
+                const saveProduct = async () => {
+                    const url = productForm.id ? `${API_BASE}/products/${productForm.id}` : `${API_BASE}/products`;
+                    const method = productForm.id ? 'PUT' : 'POST';
+                    const res = await fetch(url, {
+                        method,
+                        headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productForm)
+                    });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        ElMessage.success('保存成功');
+                        productDialogVisible.value = false;
+                        loadProducts();
+                    } else {
+                        ElMessage.error(data.msg || '保存失败');
+                    }
+                };
+
+                const toggleProductStatus = async (product) => {
+                    const newStatus = product.status === 1 ? 0 : 1;
+                    await fetch(`${API_BASE}/products/${product.id}`, {
+                        method: 'PUT',
+                        headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: newStatus })
+                    });
+                    loadProducts();
+                };
+
+                // 图片相关函数
+                const getFullImageUrl = (url) => {
+                    if (!url) return '';
+                    if (url.startsWith('http')) return url;
+                    return API_BASE.replace('/api/admin', '') + url;
+                };
+
+                const beforeLogoUpload = (file) => {
+                    const isImage = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/webp';
+                    const isLt2M = file.size / 1024 / 1024 < 2;
+
+                    if (!isImage) {
+                        ElMessage.error('只能上传 JPG、PNG、GIF、WEBP 格式的图片！');
+                        return false;
+                    }
+                    if (!isLt2M) {
+                        ElMessage.error('图片大小不能超过 2MB！');
+                        return false;
+                    }
+                    return true;
+                };
+
+                const uploadLogo = async (options) => {
+                    const { file, onProgress, onSuccess, onError } = options;
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    try {
+                        const res = await fetch(`${API_BASE}/upload/image`, {
+                            method: 'POST',
+                            headers: { ...getHeaders() },
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (data.code === 200 && data.data.url) {
+                            bankForm.logoUrl = data.data.url;
+                            onSuccess();
+                            ElMessage.success('上传成功');
+                        } else {
+                            ElMessage.error(data.msg || '上传失败');
+                            onError();
+                        }
+                    } catch (e) {
+                        ElMessage.error('上传失败: ' + e.message);
+                        onError();
+                    }
+                };
+
+                // Banks
+                const showBankDialog = (bank = null) => {
+                    editingBank.value = bank;
+                    if (bank) {
+                        Object.assign(bankForm, { id: bank.id, name: bank.name, logoUrl: bank.logoUrl, status: bank.status });
+                    } else {
+                        Object.assign(bankForm, { id: null, name: '', logoUrl: '', status: 1 });
+                    }
+                    bankDialogVisible.value = true;
+                };
+
+                const saveBank = async () => {
+                    const url = bankForm.id ? `${API_BASE}/banks/${bankForm.id}` : `${API_BASE}/banks`;
+                    const method = bankForm.id ? 'PUT' : 'POST';
+                    const res = await fetch(url, {
+                        method,
+                        headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify(bankForm)
+                    });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        ElMessage.success('保存成功');
+                        bankDialogVisible.value = false;
+                        loadBanks();
+                    } else {
+                        ElMessage.error(data.msg || '保存失败');
+                    }
+                };
+
+                const deleteBank = async (bank) => {
+                    await ElMessageBox.confirm('确定要删除该银行吗?', '提示', { type: 'warning' });
+                    await fetch(`${API_BASE}/banks/${bank.id}`, { method: 'DELETE', headers: getHeaders() });
+                    loadBanks();
+                };
+
+                // Consultants
+                const showConsultantDialog = (consultant = null) => {
+                    editingConsultant.value = consultant;
+                    if (consultant) {
+                        Object.assign(consultantForm, {
+                            id: consultant.id,
+                            name: consultant.name,
+                            bankId: consultant.bankId,
+                            phone: consultant.phone || '',
+                            status: consultant.status
+                        });
+                    } else {
+                        Object.assign(consultantForm, { id: null, name: '', bankId: null, phone: '', status: 1 });
+                    }
+                    consultantDialogVisible.value = true;
+                };
+
+                const saveConsultant = async () => {
+                    const url = consultantForm.id ? `${API_BASE}/consultants/${consultantForm.id}` : `${API_BASE}/consultants`;
+                    const method = consultantForm.id ? 'PUT' : 'POST';
+                    const res = await fetch(url, {
+                        method,
+                        headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: consultantForm.name,
+                            bankId: consultantForm.bankId,
+                            phoneEncrypted: consultantForm.phone,
+                            status: consultantForm.status
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.code === 200) {
+                        ElMessage.success('保存成功');
+                        consultantDialogVisible.value = false;
+                        loadConsultants();
+                    } else {
+                        ElMessage.error(data.msg || '保存失败');
+                    }
+                };
+
+                const deleteConsultant = async (consultant) => {
+                    await ElMessageBox.confirm('确定要删除该顾问吗?', '提示', { type: 'warning' });
+                    await fetch(`${API_BASE}/consultants/${consultant.id}`, { method: 'DELETE', headers: getHeaders() });
+                    loadConsultants();
+                };
+
+                // Feedback
+                const deleteFeedback = async (feedback) => {
+                    await ElMessageBox.confirm('确定要删除该反馈吗?', '提示', { type: 'warning' });
+                    await fetch(`${API_BASE}/feedback/${feedback.id}`, { method: 'DELETE', headers: getHeaders() });
+                    loadFeedbacks();
+                };
+
+                watch(productBankFilter, () => loadProducts());
+
+                onMounted(() => {
+                    if (token.value) loadAll();
+                });
+
+                return {
+                    token, username, loginForm, loginLoading, handleLogin, handleLogout,
+                    currentMenu, products, banks, bankSearch, filteredBanks, consultants, feedbacks, productBankFilter,
+                    productDialogVisible, bankDialogVisible, consultantDialogVisible,
+                    editingProduct, editingBank, editingConsultant,
+                    productForm, bankForm, consultantForm,
+                    loadProducts, loadBanks, loadConsultants, loadFeedbacks,
+                    showProductDialog, saveProduct, toggleProductStatus,
+                    showBankDialog, saveBank, deleteBank, filterBanks,
+                    showConsultantDialog, saveConsultant, deleteConsultant,
+                    deleteFeedback,
+                    getFullImageUrl, beforeLogoUpload, uploadLogo
+                };
+            }
+        });
+
+        app.use(ElementPlus);
+        for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+            app.component(key, component);
+        }
+        app.mount('#app');
+    </script>
+</body>
+</html>
