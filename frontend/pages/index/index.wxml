@@ -35,7 +35,7 @@
           </view>
           <!-- 收藏按钮 -->
           <view class="favorite-btn" catchtap="onFavoriteTap" data-id="{{item.id}}" data-index="{{index}}">
-            <image src="{{item.isFavorited ? '/images/heart-active.png' : '/images/heart.png'}}" mode="aspectFit"></image>
+            <image src="{{item.isFavorited ? '/images/favorited.png' : '/images/heart.png'}}" mode="aspectFit"></image>
           </view>
         </view>
 
