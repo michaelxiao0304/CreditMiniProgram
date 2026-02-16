@@ -1,6 +1,12 @@
 server:
-  port: 8080
+  port: 8443
   address: 0.0.0.0
+  ssl:
+    enabled: true
+    key-store: classpath:ssl/server.p12
+    key-store-password: creditminiapp
+    key-store-type: PKCS12
+    key-alias: creditminiapp
 
 spring:
   application:
