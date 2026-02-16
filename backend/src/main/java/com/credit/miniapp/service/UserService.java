@@ -42,8 +42,10 @@ public class UserService {
     private String secret;
 
     public LoginResponse login(String code, String userInfo) {
-        // 调用微信API获取openid
-        String openid = getOpenidFromWechat(code);
+        // 调用微信API获取openid和session_key
+        String[] result = getOpenidAndSessionKeyFromWechat(code);
+        String openid = result[0];
+        String sessionKey = result[1];
 
         // 生成JWT token
         String token = jwtUtil.generateToken(openid);
@@ -67,7 +69,21 @@ public class UserService {
         return response;
     }
 
-    private String getOpenidFromWechat(String code) {
+    /**
+     * 绑定手机号
+     */
+    public String bindPhone(String openid, String encryptedData, String iv) {
+        // TODO: 从缓存或数据库获取用户的session_key
+        // 这里需要将session_key与用户关联存储
+        // 暂时返回错误，需要先实现session_key存储
+        throw new RuntimeException("暂不支持手机号绑定，请先在微信小程序后台配置");
+    }
+
+    /**
+     * 获取微信openid和session_key
+     * @return String[0]=openid, String[1]=session_key
+     */
+    private String[] getOpenidAndSessionKeyFromWechat(String code) {
         String url = String.format(
                 "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
                 appid, secret, code
@@ -79,6 +95,14 @@ public class UserService {
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(response);
+
+            if (jsonNode.has("openid")) {
+                String openid = jsonNode.get("openid").asText();
+                String sessionKey = jsonNode.has("session_key") ? jsonNode.get("session_key").asText() : "";
+                return new String[]{openid, sessionKey};
+            } else {
+                throw new RuntimeException("获取openid失败: " + response);
+            }
 
             if (jsonNode.has("openid")) {
                 return jsonNode.get("openid").asText();

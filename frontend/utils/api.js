@@ -140,3 +140,17 @@ export function submitFeedback(content, contact) {
     data: { content, contact }
   });
 }
+
+/**
+ * 绑定手机号
+ */
+export function bindPhone(encryptedData, iv) {
+  return app.request({
+    url: '/api/auth/bindPhone',
+    method: 'POST',
+    data: {
+      encryptedData,
+      iv
+    }
+  });
+}

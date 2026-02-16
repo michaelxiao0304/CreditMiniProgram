@@ -3,15 +3,20 @@
   <!-- 用户信息区 -->
   <view class="user-section">
     <view class="user-info" wx:if="{{isLoggedIn}}">
-      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <image class="avatar" src="{{userInfo.avatarUrl || userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
       <view class="user-detail">
-        <view class="nickname">{{userInfo.nickname || '用户'}}</view>
+        <view class="nickname">{{userInfo.nickName || userInfo.nickname || '用户'}}</view>
+        <!-- 手机号绑定按钮 -->
+        <button class="phone-bind-btn" wx:if="{{!phoneNumber}}" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">
+          点击绑定手机号
+        </button>
+        <view class="phone-number" wx:else>{{phoneNumber}}</view>
       </view>
     </view>
-    <view class="login-prompt" wx:else bindtap="onLogin">
+    <button class="login-prompt" wx:else open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">
       <image class="avatar" src="/images/default-avatar.png" mode="aspectFill"></image>
-      <view class="login-text">点击登录</view>
-    </view>
+      <view class="login-text">点击授权登录</view>
+    </button>
   </view>
 
   <!-- 功能模块 -->
