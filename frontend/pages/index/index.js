@@ -194,10 +194,14 @@ Page({
     try {
       const res = await api.getFavorites();
       if (res.code === 200) {
-        const favoriteIds = new Set((res.data || []).map(item => item.productId));
-        const updatedProducts = products.map(item => {
-          const obj = Object.assign({}, item);
-          obj.isFavorited = favoriteIds.has(item.id);
+        // 使用普通对象代替 Set
+        var favoriteIds = {};
+        (res.data || []).forEach(function(item) {
+          favoriteIds[item.productId] = true;
+        });
+        var updatedProducts = products.map(function(item) {
+          var obj = Object.assign({}, item);
+          obj.isFavorited = !!favoriteIds[item.id];
           return obj;
         });
         this.setData({ products: updatedProducts });

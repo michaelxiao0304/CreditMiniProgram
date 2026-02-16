@@ -7,39 +7,39 @@ App({
   },
 
   // 获取完整图片URL
-  getImageUrl(path) {
+  getImageUrl: function(path) {
     if (!path) return '';
-    if (path.startsWith('http')) return path;
+    if (path.indexOf('http') === 0) return path;
     return this.globalData.baseUrl + path;
   },
 
-  onLaunch() {
+  onLaunch: function() {
     // 检查登录状态
     this.checkLogin();
   },
 
-  checkLogin() {
-    const token = wx.getStorageSync('token');
+  checkLogin: function() {
+    var token = wx.getStorageSync('token');
     if (token) {
       this.globalData.token = token;
-      const userInfo = wx.getStorageSync('userInfo');
+      var userInfo = wx.getStorageSync('userInfo');
       if (userInfo) {
         this.globalData.userInfo = userInfo;
       }
     }
   },
 
-  setToken(token) {
+  setToken: function(token) {
     this.globalData.token = token;
     wx.setStorageSync('token', token);
   },
 
-  setUserInfo(userInfo) {
+  setUserInfo: function(userInfo) {
     this.globalData.userInfo = userInfo;
     wx.setStorageSync('userInfo', userInfo);
   },
 
-  clearLogin() {
+  clearLogin: function() {
     this.globalData.token = '';
     this.globalData.userInfo = null;
     wx.removeStorageSync('token');
@@ -47,10 +47,10 @@ App({
   },
 
   // 请求封装
-  request(options) {
-    const app = this;
-    return new Promise((resolve, reject) => {
-      const header = options.header || {};
+  request: function(options) {
+    var app = this;
+    return new Promise(function(resolve, reject) {
+      var header = options.header || {};
 
       // 添加token
       if (app.globalData.token) {
@@ -67,7 +67,7 @@ App({
         method: options.method || 'GET',
         data: options.data || {},
         header: header,
-        success(res) {
+        success: function(res) {
           if (res.data.code === 200) {
             resolve(res.data);
           } else if (res.data.code === 401) {
@@ -86,7 +86,7 @@ App({
             reject(res.data);
           }
         },
-        fail(err) {
+        fail: function(err) {
           wx.showToast({
             title: '网络请求失败',
             icon: 'none'
