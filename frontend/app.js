@@ -1,7 +1,7 @@
 // app.js
 App({
   globalData: {
-    baseUrl: 'https://credit-miniapp.loca.lt',
+    baseUrl: 'http://43.165.166.249:8080',
     token: '',
     userInfo: null
   },
