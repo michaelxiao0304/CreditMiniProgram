@@ -38,11 +38,11 @@ function maskPhone(phone) {
  */
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  var date = new Date(dateStr);
-  var year = date.getFullYear();
-  var month = String(date.getMonth() + 1).padStart(2, '0');
-  var day = String(date.getDate()).padStart(2, '0');
-  return year + '-' + month + '-' + day;
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /**
@@ -52,13 +52,13 @@ function formatDate(dateStr) {
  */
 function formatDateTime(dateStr) {
   if (!dateStr) return '';
-  var date = new Date(dateStr);
-  var year = date.getFullYear();
-  var month = String(date.getMonth() + 1).padStart(2, '0');
-  var day = String(date.getDate()).padStart(2, '0');
-  var hour = String(date.getHours()).padStart(2, '0');
-  var minute = String(date.getMinutes()).padStart(2, '0');
-  return year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+  const date = new Date(dateStr);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hour}:${minute}`;
 }
 
 /**
@@ -68,13 +68,13 @@ function formatDateTime(dateStr) {
  */
 function relativeTime(dateStr) {
   if (!dateStr) return '';
-  var date = new Date(dateStr);
-  var now = new Date();
-  var diff = now - date;
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = now - date;
 
-  var minute = 60 * 1000;
-  var hour = 60 * minute;
-  var day = 24 * hour;
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
 
   if (diff < minute) {
     return '刚刚';
@@ -90,10 +90,10 @@ function relativeTime(dateStr) {
 }
 
 module.exports = {
-  formatAmount: formatAmount,
-  formatRate: formatRate,
-  maskPhone: maskPhone,
-  formatDate: formatDate,
-  formatDateTime: formatDateTime,
-  relativeTime: relativeTime
+  formatAmount,
+  formatRate,
+  maskPhone,
+  formatDate,
+  formatDateTime,
+  relativeTime
 };

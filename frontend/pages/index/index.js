@@ -92,16 +92,15 @@ Page({
       const res = await api.getProducts(params);
 
       if (res.code === 200) {
-        const newProducts = (res.data.records || []).map(item => {
-          const obj = Object.assign({}, item);
-          obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
-          obj.tags = item.tags ? item.tags.split(',') : [];
-          obj.isFavorited = false;
-          return obj;
-        });
+        const newProducts = (res.data.records || []).map(item => ({
+          ...item,
+          bankLogoUrl: app.getImageUrl(item.bankLogoUrl),
+          tags: item.tags ? item.tags.split(',') : [],
+          isFavorited: false
+        }));
 
         this.setData({
-          products: loadMore ? this.data.products.concat(newProducts) : newProducts,
+          products: loadMore ? [...this.data.products, ...newProducts] : newProducts,
           hasMore: res.data.records && res.data.records.length >= this.data.size
         });
       }
@@ -173,7 +172,7 @@ Page({
       }
 
       // 更新状态
-      const products = this.data.products.slice();
+      const products = [...this.data.products];
       products[index].isFavorited = !products[index].isFavorited;
       this.setData({ products });
     } catch (err) {
@@ -194,16 +193,11 @@ Page({
     try {
       const res = await api.getFavorites();
       if (res.code === 200) {
-        // 使用普通对象代替 Set
-        var favoriteIds = {};
-        (res.data || []).forEach(function(item) {
-          favoriteIds[item.productId] = true;
-        });
-        var updatedProducts = products.map(function(item) {
-          var obj = Object.assign({}, item);
-          obj.isFavorited = !!favoriteIds[item.id];
-          return obj;
-        });
+        const favoriteIds = new Set((res.data || []).map(item => item.productId));
+        const updatedProducts = products.map(item => ({
+          ...item,
+          isFavorited: favoriteIds.has(item.id)
+        }));
         this.setData({ products: updatedProducts });
       }
     } catch (err) {

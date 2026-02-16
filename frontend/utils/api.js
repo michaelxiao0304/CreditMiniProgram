@@ -1,17 +1,17 @@
 /**
  * API接口封装
  */
-var app = getApp();
+const app = getApp();
 
 /**
  * 微信登录
  */
-function login(code, userInfo) {
+export function login(code, userInfo) {
   return app.request({
     url: '/api/auth/login',
     method: 'POST',
     data: {
-      code: code,
+      code,
       userInfo: JSON.stringify(userInfo)
     }
   });
@@ -20,7 +20,7 @@ function login(code, userInfo) {
 /**
  * 获取产品列表
  */
-function getProducts(params) {
+export function getProducts(params) {
   return app.request({
     url: '/api/products',
     method: 'GET',
@@ -31,9 +31,9 @@ function getProducts(params) {
 /**
  * 获取产品详情
  */
-function getProductDetail(id) {
+export function getProductDetail(id) {
   return app.request({
-    url: '/api/products/' + id,
+    url: `/api/products/${id}`,
     method: 'GET'
   });
 }
@@ -41,7 +41,7 @@ function getProductDetail(id) {
 /**
  * 获取银行列表
  */
-function getBanks() {
+export function getBanks() {
   return app.request({
     url: '/api/banks',
     method: 'GET'
@@ -51,9 +51,9 @@ function getBanks() {
 /**
  * 获取顾问信息
  */
-function getConsultant(productId) {
+export function getConsultant(productId) {
   return app.request({
-    url: '/api/consultant/' + productId,
+    url: `/api/consultant/${productId}`,
     method: 'GET'
   });
 }
@@ -61,7 +61,7 @@ function getConsultant(productId) {
 /**
  * 获取用户收藏列表
  */
-function getFavorites() {
+export function getFavorites() {
   return app.request({
     url: '/api/favorites',
     method: 'GET'
@@ -71,20 +71,20 @@ function getFavorites() {
 /**
  * 添加收藏
  */
-function addFavorite(productId) {
+export function addFavorite(productId) {
   return app.request({
     url: '/api/favorites',
     method: 'POST',
-    data: { productId: productId }
+    data: { productId }
   });
 }
 
 /**
  * 取消收藏
  */
-function removeFavorite(productId) {
+export function removeFavorite(productId) {
   return app.request({
-    url: '/api/favorites/' + productId,
+    url: `/api/favorites/${productId}`,
     method: 'DELETE'
   });
 }
@@ -92,9 +92,9 @@ function removeFavorite(productId) {
 /**
  * 检查是否收藏
  */
-function checkFavorite(productId) {
+export function checkFavorite(productId) {
   return app.request({
-    url: '/api/favorites/check/' + productId,
+    url: `/api/favorites/check/${productId}`,
     method: 'GET'
   });
 }
@@ -102,7 +102,7 @@ function checkFavorite(productId) {
 /**
  * 获取浏览历史
  */
-function getHistory() {
+export function getHistory() {
   return app.request({
     url: '/api/history',
     method: 'GET'
@@ -112,18 +112,18 @@ function getHistory() {
 /**
  * 添加浏览历史
  */
-function addHistory(productId) {
+export function addHistory(productId) {
   return app.request({
     url: '/api/history',
     method: 'POST',
-    data: { productId: productId }
+    data: { productId }
   });
 }
 
 /**
  * 清空浏览历史
  */
-function clearHistory() {
+export function clearHistory() {
   return app.request({
     url: '/api/history',
     method: 'DELETE'
@@ -133,41 +133,24 @@ function clearHistory() {
 /**
  * 提交反馈
  */
-function submitFeedback(content, contact) {
+export function submitFeedback(content, contact) {
   return app.request({
     url: '/api/feedback',
     method: 'POST',
-    data: { content: content, contact: contact }
+    data: { content, contact }
   });
 }
 
 /**
  * 绑定手机号
  */
-function bindPhone(encryptedData, iv) {
+export function bindPhone(encryptedData, iv) {
   return app.request({
     url: '/api/auth/bindPhone',
     method: 'POST',
     data: {
-      encryptedData: encryptedData,
-      iv: iv
+      encryptedData,
+      iv
     }
   });
 }
-
-module.exports = {
-  login: login,
-  getProducts: getProducts,
-  getProductDetail: getProductDetail,
-  getBanks: getBanks,
-  getConsultant: getConsultant,
-  getFavorites: getFavorites,
-  addFavorite: addFavorite,
-  removeFavorite: removeFavorite,
-  checkFavorite: checkFavorite,
-  getHistory: getHistory,
-  addHistory: addHistory,
-  clearHistory: clearHistory,
-  submitFeedback: submitFeedback,
-  bindPhone: bindPhone
-};
