@@ -143,6 +143,15 @@ Page({
 
   // 收藏点击
   async onFavoriteTap(e) {
+    // 检查登录状态
+    if (!app.globalData.token) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      return;
+    }
+
     const productId = e.currentTarget.dataset.id;
     const index = e.currentTarget.dataset.index;
     const product = this.data.products[index];
@@ -173,6 +182,11 @@ Page({
 
   // 检查收藏状态
   async checkFavorites() {
+    // 未登录时不检查收藏状态
+    if (!app.globalData.token) {
+      return;
+    }
+
     const products = this.data.products;
     if (!products.length) return;
 
@@ -187,7 +201,8 @@ Page({
         this.setData({ products: updatedProducts });
       }
     } catch (err) {
-      console.error('检查收藏状态失败', err);
+      // 未登录或接口错误时不显示错误
+      console.log('检查收藏状态跳过');
     }
   },
 

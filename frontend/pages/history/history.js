@@ -10,6 +10,15 @@ Page({
   },
 
   onLoad() {
+    // 检查登录状态
+    if (!app.globalData.token) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      wx.navigateBack();
+      return;
+    }
     this.loadHistory();
   },
 
