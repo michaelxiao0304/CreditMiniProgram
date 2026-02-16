@@ -82,6 +82,40 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_passwo
 - Phone numbers are encrypted with AES in database, returned masked (e.g., `138****5678`)
 - Use `@TableField(exist = false)` for non-database fields in MyBatis Plus entities
 
+## WeChat Mini-Program Compatibility
+
+**Important**: When developing the mini-program frontend, you MUST use ES5 syntax only (not ES6) to ensure compatibility with `lazyCodeLoading: requiredComponents` configuration.
+
+### Prohibited ES6 Features
+- `const` / `let` → use `var` instead
+- Arrow functions `() => {}` → use `function() {}` instead
+- Template literals `` `${var}` `` → use string concatenation instead
+- Spread operator `...obj` → use `Object.assign({}, obj)` instead
+- Destructuring `{ a, b } = obj` → use `obj.a` and `obj.b` instead
+- `new Set()` / `new Map()` → use plain objects for lookups
+- `arr.includes()` → use `arr.indexOf() !== -1` instead
+- `str.startsWith()` / `str.endsWith()` → use `str.indexOf() !== -1` instead
+- `export` / `import` → use `module.exports` / `require()` instead
+- `async` / `await` → NOTE: These are supported, use them freely
+
+### Code Style
+```javascript
+// ❌ Wrong (ES6)
+const app = getApp();
+const { token, userInfo } = app.globalData;
+const list = items.map(item => ({ ...item, id: item.id + 1 }));
+
+// ✅ Correct (ES5)
+var app = getApp();
+var token = app.globalData.token;
+var userInfo = app.globalData.userInfo;
+var list = items.map(function(item) {
+  var obj = Object.assign({}, item);
+  obj.id = item.id + 1;
+  return obj;
+});
+```
+
 ## Build Outputs to Ignore
 - `backend/target/` - Maven build artifacts
 - `*.jar` - Compiled Java packages
