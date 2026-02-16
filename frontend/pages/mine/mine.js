@@ -37,9 +37,19 @@ Page({
     const userInfo = wx.getStorageSync('userInfo');
     const phoneNumber = wx.getStorageSync('phoneNumber') || '';
 
+    // userInfo可能是字符串或对象，需要判断
+    let parsedUserInfo = null;
+    if (userInfo) {
+      try {
+        parsedUserInfo = typeof userInfo === 'string' ? JSON.parse(userInfo) : userInfo;
+      } catch (e) {
+        parsedUserInfo = null;
+      }
+    }
+
     this.setData({
       isLoggedIn: !!token,
-      userInfo: userInfo ? JSON.parse(userInfo) : null,
+      userInfo: parsedUserInfo,
       phoneNumber: phoneNumber
     });
   },
