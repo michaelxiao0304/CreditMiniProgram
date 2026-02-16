@@ -116,6 +116,34 @@ Page({
     }
   },
 
+  // 刷新产品列表
+  onRefreshTap() {
+    if (this.data.loading) return;
+
+    wx.showLoading({
+      title: '刷新中...',
+      mask: true
+    });
+
+    this.setData({
+      page: 1,
+      products: []
+    });
+    Promise.all([
+      this.loadBanks(),
+      this.loadProducts()
+    ]).then(function() {
+      wx.hideLoading();
+      wx.showToast({
+        title: '刷新成功',
+        icon: 'success',
+        duration: 1500
+      });
+    }).catch(function() {
+      wx.hideLoading();
+    });
+  },
+
   // 切换银行筛选
   onBankChange(e) {
     var bankId = parseInt(e.currentTarget.dataset.id);

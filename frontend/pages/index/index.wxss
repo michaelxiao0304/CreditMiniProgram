@@ -12,6 +12,35 @@
   background: #fff;
   padding: 20rpx 0;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+}
+
+.filter-scroll {
+  flex: 1;
+}
+
+.refresh-btn {
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #1AAD19;
+  flex-shrink: 0;
+}
+
+.refresh-btn.refreshing {
+  color: #999;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .filter-scroll {
