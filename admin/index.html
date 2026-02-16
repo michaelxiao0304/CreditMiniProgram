@@ -435,9 +435,21 @@
                     localStorage.removeItem('admin_username');
                 };
 
+                // 检查登录态是否失效
+                const checkAuth = (data) => {
+                    if (data.code === 401) {
+                        ElMessage.warning('登录已失效，请重新登录');
+                        handleLogout();
+                        window.location.reload();
+                        return false;
+                    }
+                    return true;
+                };
+
                 const loadProducts = async () => {
                     const res = await fetch(`${API_BASE}/products`, { headers: getHeaders() });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         products.value = data.data.records.map(p => ({
                             ...p,
@@ -453,6 +465,7 @@
                 const loadBanks = async () => {
                     const res = await fetch(`${API_BASE}/banks`, { headers: getHeaders() });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         banks.value = data.data.records;
                         filterBanks();
@@ -473,6 +486,7 @@
                 const loadConsultants = async () => {
                     const res = await fetch(`${API_BASE}/consultants`, { headers: getHeaders() });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         consultants.value = data.data;
                     }
@@ -481,6 +495,7 @@
                 const loadFeedbacks = async () => {
                     const res = await fetch(`${API_BASE}/feedback`, { headers: getHeaders() });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         feedbacks.value = data.data.records;
                     }
@@ -528,6 +543,7 @@
                         body: JSON.stringify(productForm)
                     });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         ElMessage.success('保存成功');
                         productDialogVisible.value = false;
@@ -581,6 +597,7 @@
                             body: formData
                         });
                         const data = await res.json();
+                        if (!checkAuth(data)) return;
                         if (data.code === 200 && data.data.url) {
                             bankForm.logoUrl = data.data.url;
                             onSuccess();
@@ -615,6 +632,7 @@
                         body: JSON.stringify(bankForm)
                     });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         ElMessage.success('保存成功');
                         bankDialogVisible.value = false;
@@ -626,7 +644,9 @@
 
                 const deleteBank = async (bank) => {
                     await ElMessageBox.confirm('确定要删除该银行吗?', '提示', { type: 'warning' });
-                    await fetch(`${API_BASE}/banks/${bank.id}`, { method: 'DELETE', headers: getHeaders() });
+                    var res = await fetch(`${API_BASE}/banks/${bank.id}`, { method: 'DELETE', headers: getHeaders() });
+                    var data = await res.json();
+                    if (!checkAuth(data)) return;
                     loadBanks();
                 };
 
@@ -661,6 +681,7 @@
                         })
                     });
                     const data = await res.json();
+                    if (!checkAuth(data)) return;
                     if (data.code === 200) {
                         ElMessage.success('保存成功');
                         consultantDialogVisible.value = false;
@@ -672,14 +693,18 @@
 
                 const deleteConsultant = async (consultant) => {
                     await ElMessageBox.confirm('确定要删除该顾问吗?', '提示', { type: 'warning' });
-                    await fetch(`${API_BASE}/consultants/${consultant.id}`, { method: 'DELETE', headers: getHeaders() });
+                    var res = await fetch(`${API_BASE}/consultants/${consultant.id}`, { method: 'DELETE', headers: getHeaders() });
+                    var data = await res.json();
+                    if (!checkAuth(data)) return;
                     loadConsultants();
                 };
 
                 // Feedback
                 const deleteFeedback = async (feedback) => {
                     await ElMessageBox.confirm('确定要删除该反馈吗?', '提示', { type: 'warning' });
-                    await fetch(`${API_BASE}/feedback/${feedback.id}`, { method: 'DELETE', headers: getHeaders() });
+                    var res = await fetch(`${API_BASE}/feedback/${feedback.id}`, { method: 'DELETE', headers: getHeaders() });
+                    var data = await res.json();
+                    if (!checkAuth(data)) return;
                     loadFeedbacks();
                 };
 
