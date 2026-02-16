@@ -1,6 +1,6 @@
 // pages/mine/mine.js
-const app = getApp();
-const api = require('../../utils/api.js');
+var app = getApp();
+var api = require('../../utils/api.js');
 
 Page({
   data: {
@@ -33,12 +33,12 @@ Page({
 
   // 检查登录状态
   checkLoginStatus() {
-    const token = wx.getStorageSync('token');
-    const userInfo = wx.getStorageSync('userInfo');
-    const phoneNumber = wx.getStorageSync('phoneNumber') || '';
+    var token = wx.getStorageSync('token');
+    var userInfo = wx.getStorageSync('userInfo');
+    var phoneNumber = wx.getStorageSync('phoneNumber') || '';
 
     // userInfo可能是字符串或对象，需要判断
-    let parsedUserInfo = null;
+    var parsedUserInfo = null;
     if (userInfo) {
       try {
         parsedUserInfo = typeof userInfo === 'string' ? JSON.parse(userInfo) : userInfo;
@@ -64,12 +64,12 @@ Page({
       return;
     }
 
-    const encryptedData = e.detail.encryptedData;
-    const iv = e.detail.iv;
+    var encryptedData = e.detail.encryptedData;
+    var iv = e.detail.iv;
 
     wx.showLoading({ title: '绑定中...' });
     try {
-      const res = await api.bindPhone(encryptedData, iv);
+      var res = await api.bindPhone(encryptedData, iv);
       wx.hideLoading();
 
       if (res.code === 200 && res.data.phoneNumber) {
@@ -95,7 +95,7 @@ Page({
   // 加载收藏数量
   async loadFavoritesCount() {
     try {
-      const res = await api.getFavorites();
+      var res = await api.getFavorites();
       if (res.code === 200) {
         this.setData({
           favoritesCount: (res.data || []).length
@@ -108,7 +108,7 @@ Page({
 
   // 微信登录 - 获取用户信息 (使用button open-type="getUserInfo")
   async onGetUserInfo(e) {
-    const userInfo = e.detail.userInfo;
+    var userInfo = e.detail.userInfo;
     if (!userInfo) {
       // 用户拒绝授权
       wx.showToast({
@@ -119,9 +119,9 @@ Page({
     }
 
     // 获取code用于登录
-    const loginResult = await new Promise((resolve, reject) => {
+    var loginResult = await new Promise(function(resolve, reject) {
       wx.login({
-        success: (res) => {
+        success: function(res) {
           resolve(res.code);
         },
         fail: reject
@@ -131,7 +131,7 @@ Page({
     // 调用登录API
     wx.showLoading({ title: '登录中...' });
     try {
-      const res = await api.login(loginResult, userInfo);
+      var res = await api.login(loginResult, userInfo);
       wx.hideLoading();
 
       if (res.code === 200) {
@@ -172,7 +172,7 @@ Page({
     wx.showModal({
       title: '提示',
       content: '确定要退出登录吗？',
-      success: (res) => {
+      success: function(res) {
         if (res.confirm) {
           app.clearLogin();
           this.setData({
@@ -250,7 +250,7 @@ Page({
 
   // 提交反馈
   async onSubmitFeedback() {
-    const { feedbackContent, feedbackContact } = this.data;
+    var { feedbackContent, feedbackContact } = this.data;
 
     if (!feedbackContent.trim()) {
       wx.showToast({
@@ -263,7 +263,7 @@ Page({
     wx.showLoading({ title: '提交中...' });
 
     try {
-      const res = await api.submitFeedback(feedbackContent, feedbackContact);
+      var res = await api.submitFeedback(feedbackContent, feedbackContact);
       wx.hideLoading();
 
       if (res.code === 200) {

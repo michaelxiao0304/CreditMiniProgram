@@ -1,7 +1,7 @@
 // pages/index/index.js
-const api = require('../../utils/api.js');
-const util = require('../../utils/util.js');
-const app = getApp();
+var api = require('../../utils/api.js');
+var util = require('../../utils/util.js');
+var app = getApp();
 
 Page({
   data: {
@@ -44,7 +44,7 @@ Page({
     Promise.all([
       this.loadBanks(),
       this.loadProducts()
-    ]).then(() => {
+    ]).then(function() {
       wx.stopPullDownRefresh();
     });
   },
@@ -62,7 +62,7 @@ Page({
   // 加载银行列表
   async loadBanks() {
     try {
-      const res = await api.getBanks();
+      var res = await api.getBanks();
       if (res.code === 200) {
         this.setData({
           banks: res.data || []
@@ -80,7 +80,7 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const params = {
+      var params = {
         page: this.data.page,
         size: this.data.size
       };
@@ -89,18 +89,19 @@ Page({
         params.bankId = this.data.currentBankId;
       }
 
-      const res = await api.getProducts(params);
+      var res = await api.getProducts(params);
 
       if (res.code === 200) {
-        const newProducts = (res.data.records || []).map(item => ({
-          ...item,
-          bankLogoUrl: app.getImageUrl(item.bankLogoUrl),
-          tags: item.tags ? item.tags.split(',') : [],
-          isFavorited: false
-        }));
+        var newProducts = (res.data.records || []).map(function(item) {
+          var obj = Object.assign({}, item);
+          obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
+          obj.tags = item.tags ? item.tags.split(',') : [];
+          obj.isFavorited = false;
+          return obj;
+        });
 
         this.setData({
-          products: loadMore ? [...this.data.products, ...newProducts] : newProducts,
+          products: loadMore ? this.data.products.concat(newProducts) : newProducts,
           hasMore: res.data.records && res.data.records.length >= this.data.size
         });
       }
@@ -117,7 +118,7 @@ Page({
 
   // 切换银行筛选
   onBankChange(e) {
-    const bankId = parseInt(e.currentTarget.dataset.id);
+    var bankId = parseInt(e.currentTarget.dataset.id);
     this.setData({
       currentBankId: bankId,
       page: 1,
@@ -128,14 +129,14 @@ Page({
 
   // 产品点击
   onProductTap(e) {
-    const productId = e.currentTarget.dataset.id;
+    var productId = e.currentTarget.dataset.id;
     // 添加浏览历史
     this.addHistory(productId);
   },
 
   // 展开/收起详情
   onExpandTap(e) {
-    const productId = e.currentTarget.dataset.id;
+    var productId = e.currentTarget.dataset.id;
     this.setData({
       expandedId: this.data.expandedId === productId ? null : productId
     });
@@ -152,9 +153,9 @@ Page({
       return;
     }
 
-    const productId = e.currentTarget.dataset.id;
-    const index = e.currentTarget.dataset.index;
-    const product = this.data.products[index];
+    var productId = e.currentTarget.dataset.id;
+    var index = e.currentTarget.dataset.index;
+    var product = this.data.products[index];
 
     try {
       if (product.isFavorited) {
@@ -172,7 +173,7 @@ Page({
       }
 
       // 更新状态
-      const products = [...this.data.products];
+      var products = this.data.products.slice();
       products[index].isFavorited = !products[index].isFavorited;
       this.setData({ products });
     } catch (err) {
@@ -187,17 +188,22 @@ Page({
       return;
     }
 
-    const products = this.data.products;
+    var products = this.data.products;
     if (!products.length) return;
 
     try {
-      const res = await api.getFavorites();
+      var res = await api.getFavorites();
       if (res.code === 200) {
-        const favoriteIds = new Set((res.data || []).map(item => item.productId));
-        const updatedProducts = products.map(item => ({
-          ...item,
-          isFavorited: favoriteIds.has(item.id)
-        }));
+        // 使用普通对象代替 Set
+        var favoriteIds = {};
+        (res.data || []).forEach(function(item) {
+          favoriteIds[item.productId] = true;
+        });
+        var updatedProducts = products.map(function(item) {
+          var obj = Object.assign({}, item);
+          obj.isFavorited = !!favoriteIds[item.id];
+          return obj;
+        });
         this.setData({ products: updatedProducts });
       }
     } catch (err) {
@@ -208,13 +214,13 @@ Page({
 
   // 联系顾问
   async onContactTap(e) {
-    const productId = e.currentTarget.dataset.id;
+    var productId = e.currentTarget.dataset.id;
     this.setData({ currentProductId: productId });
 
     wx.showLoading({ title: '加载中...' });
 
     try {
-      const res = await api.getConsultant(productId);
+      var res = await api.getConsultant(productId);
       wx.hideLoading();
 
       if (res.code === 200 && res.data) {
@@ -248,7 +254,7 @@ Page({
 
   // 一键拨号
   onCallConsultant() {
-    const phone = this.data.consultant.phoneRaw;
+    var phone = this.data.consultant.phoneRaw;
     if (phone) {
       wx.makePhoneCall({
         phoneNumber: phone

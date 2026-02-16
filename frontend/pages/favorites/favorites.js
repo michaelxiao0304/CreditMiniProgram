@@ -1,6 +1,6 @@
 // pages/favorites/favorites.js
-const api = require('../../utils/api.js');
-const app = getApp();
+var api = require('../../utils/api.js');
+var app = getApp();
 
 Page({
   data: {
@@ -29,10 +29,10 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const res = await api.getFavorites();
+      var res = await api.getFavorites();
       if (res.code === 200) {
-        const favorites = (res.data || []).map(item => {
-          const obj = Object.assign({}, item);
+        var favorites = (res.data || []).map(function(item) {
+          var obj = Object.assign({}, item);
           obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
           return obj;
         });
@@ -50,18 +50,18 @@ Page({
   },
 
   async onRemoveFavorite(e) {
-    const productId = e.currentTarget.dataset.id;
-    const index = e.currentTarget.dataset.index;
+    var productId = e.currentTarget.dataset.id;
+    var index = e.currentTarget.dataset.index;
 
     wx.showModal({
       title: '提示',
       content: '确定取消收藏吗？',
-      success: async (res) => {
+      success: async function(res) {
         if (res.confirm) {
           try {
             await api.removeFavorite(productId);
 
-            const favorites = this.data.favorites.slice();
+            var favorites = this.data.favorites.slice();
             favorites.splice(index, 1);
 
             this.setData({ favorites });

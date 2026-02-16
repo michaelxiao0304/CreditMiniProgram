@@ -1,7 +1,7 @@
 // pages/history/history.js
-const api = require('../../utils/api.js');
-const util = require('../../utils/util.js');
-const app = getApp();
+var api = require('../../utils/api.js');
+var util = require('../../utils/util.js');
+var app = getApp();
 
 Page({
   data: {
@@ -26,11 +26,11 @@ Page({
     this.setData({ loading: true });
 
     try {
-      const res = await api.getHistory();
+      var res = await api.getHistory();
       if (res.code === 200) {
         // 格式化时间
-        const history = (res.data || []).map(item => {
-          const obj = Object.assign({}, item);
+        var history = (res.data || []).map(function(item) {
+          var obj = Object.assign({}, item);
           obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
           obj.createdAt = util.relativeTime(item.createdAt);
           return obj;
@@ -52,7 +52,7 @@ Page({
     wx.showModal({
       title: '提示',
       content: '确定清空所有浏览历史吗？',
-      success: async (res) => {
+      success: async function(res) {
         if (res.confirm) {
           try {
             await api.clearHistory();

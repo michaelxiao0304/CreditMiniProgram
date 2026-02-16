@@ -1,17 +1,17 @@
 /**
  * API接口封装
  */
-const app = getApp();
+var app = getApp();
 
 /**
  * 微信登录
  */
-export function login(code, userInfo) {
+function login(code, userInfo) {
   return app.request({
     url: '/api/auth/login',
     method: 'POST',
     data: {
-      code,
+      code: code,
       userInfo: JSON.stringify(userInfo)
     }
   });
@@ -20,7 +20,7 @@ export function login(code, userInfo) {
 /**
  * 获取产品列表
  */
-export function getProducts(params) {
+function getProducts(params) {
   return app.request({
     url: '/api/products',
     method: 'GET',
@@ -31,9 +31,9 @@ export function getProducts(params) {
 /**
  * 获取产品详情
  */
-export function getProductDetail(id) {
+function getProductDetail(id) {
   return app.request({
-    url: `/api/products/${id}`,
+    url: '/api/products/' + id,
     method: 'GET'
   });
 }
@@ -41,7 +41,7 @@ export function getProductDetail(id) {
 /**
  * 获取银行列表
  */
-export function getBanks() {
+function getBanks() {
   return app.request({
     url: '/api/banks',
     method: 'GET'
@@ -51,9 +51,9 @@ export function getBanks() {
 /**
  * 获取顾问信息
  */
-export function getConsultant(productId) {
+function getConsultant(productId) {
   return app.request({
-    url: `/api/consultant/${productId}`,
+    url: '/api/consultant/' + productId,
     method: 'GET'
   });
 }
@@ -61,7 +61,7 @@ export function getConsultant(productId) {
 /**
  * 获取用户收藏列表
  */
-export function getFavorites() {
+function getFavorites() {
   return app.request({
     url: '/api/favorites',
     method: 'GET'
@@ -71,20 +71,20 @@ export function getFavorites() {
 /**
  * 添加收藏
  */
-export function addFavorite(productId) {
+function addFavorite(productId) {
   return app.request({
     url: '/api/favorites',
     method: 'POST',
-    data: { productId }
+    data: { productId: productId }
   });
 }
 
 /**
  * 取消收藏
  */
-export function removeFavorite(productId) {
+function removeFavorite(productId) {
   return app.request({
-    url: `/api/favorites/${productId}`,
+    url: '/api/favorites/' + productId,
     method: 'DELETE'
   });
 }
@@ -92,9 +92,9 @@ export function removeFavorite(productId) {
 /**
  * 检查是否收藏
  */
-export function checkFavorite(productId) {
+function checkFavorite(productId) {
   return app.request({
-    url: `/api/favorites/check/${productId}`,
+    url: '/api/favorites/check/' + productId,
     method: 'GET'
   });
 }
@@ -102,7 +102,7 @@ export function checkFavorite(productId) {
 /**
  * 获取浏览历史
  */
-export function getHistory() {
+function getHistory() {
   return app.request({
     url: '/api/history',
     method: 'GET'
@@ -112,18 +112,18 @@ export function getHistory() {
 /**
  * 添加浏览历史
  */
-export function addHistory(productId) {
+function addHistory(productId) {
   return app.request({
     url: '/api/history',
     method: 'POST',
-    data: { productId }
+    data: { productId: productId }
   });
 }
 
 /**
  * 清空浏览历史
  */
-export function clearHistory() {
+function clearHistory() {
   return app.request({
     url: '/api/history',
     method: 'DELETE'
@@ -133,24 +133,41 @@ export function clearHistory() {
 /**
  * 提交反馈
  */
-export function submitFeedback(content, contact) {
+function submitFeedback(content, contact) {
   return app.request({
     url: '/api/feedback',
     method: 'POST',
-    data: { content, contact }
+    data: { content: content, contact: contact }
   });
 }
 
 /**
  * 绑定手机号
  */
-export function bindPhone(encryptedData, iv) {
+function bindPhone(encryptedData, iv) {
   return app.request({
     url: '/api/auth/bindPhone',
     method: 'POST',
     data: {
-      encryptedData,
-      iv
+      encryptedData: encryptedData,
+      iv: iv
     }
   });
 }
+
+module.exports = {
+  login: login,
+  getProducts: getProducts,
+  getProductDetail: getProductDetail,
+  getBanks: getBanks,
+  getConsultant: getConsultant,
+  getFavorites: getFavorites,
+  addFavorite: addFavorite,
+  removeFavorite: removeFavorite,
+  checkFavorite: checkFavorite,
+  getHistory: getHistory,
+  addHistory: addHistory,
+  clearHistory: clearHistory,
+  submitFeedback: submitFeedback,
+  bindPhone: bindPhone
+};
