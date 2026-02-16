@@ -29,7 +29,8 @@ public class UserController {
     }
 
     @PostMapping("/favorites")
-    public ApiResponse<Map<String, Object>> addFavorite(@RequestParam Long productId, HttpServletRequest request) {
+    public ApiResponse<Map<String, Object>> addFavorite(@RequestBody Map<String, Long> params, HttpServletRequest request) {
+        Long productId = params.get("productId");
         String openid = (String) request.getAttribute("openid");
         UserFavorite favorite = userService.addFavorite(openid, productId);
 
@@ -67,7 +68,8 @@ public class UserController {
     }
 
     @PostMapping("/history")
-    public ApiResponse<UserHistory> addHistory(@RequestParam Long productId, HttpServletRequest request) {
+    public ApiResponse<UserHistory> addHistory(@RequestBody Map<String, Long> params, HttpServletRequest request) {
+        Long productId = params.get("productId");
         String openid = (String) request.getAttribute("openid");
         UserHistory history = userService.addHistory(openid, productId);
         return ApiResponse.success(history);

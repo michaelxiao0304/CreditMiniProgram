@@ -103,18 +103,10 @@ public class UserService {
             } else {
                 throw new RuntimeException("获取openid失败: " + response);
             }
-
-            if (jsonNode.has("openid")) {
-                return jsonNode.get("openid").asText();
-            } else if (jsonNode.has("errcode")) {
-                throw new RuntimeException("微信登录失败: " + jsonNode.get("errmsg").asText());
-            }
         } catch (Exception e) {
             // 开发环境使用模拟openid
-            return "mock_openid_" + System.currentTimeMillis();
+            return new String[]{"mock_openid_" + System.currentTimeMillis(), ""};
         }
-
-        return "mock_openid_" + System.currentTimeMillis();
     }
 
     public List<UserFavorite> getFavorites(String openid) {
