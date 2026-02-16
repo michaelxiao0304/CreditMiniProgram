@@ -31,10 +31,11 @@ Page({
     try {
       const res = await api.getFavorites();
       if (res.code === 200) {
-        const favorites = (res.data || []).map(item => ({
-          ...item,
-          bankLogoUrl: app.getImageUrl(item.bankLogoUrl)
-        }));
+        const favorites = (res.data || []).map(item => {
+          const obj = Object.assign({}, item);
+          obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
+          return obj;
+        });
         this.setData({ favorites });
       }
     } catch (err) {
@@ -60,7 +61,7 @@ Page({
           try {
             await api.removeFavorite(productId);
 
-            const favorites = [...this.data.favorites];
+            const favorites = this.data.favorites.slice();
             favorites.splice(index, 1);
 
             this.setData({ favorites });

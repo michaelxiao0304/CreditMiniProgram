@@ -29,11 +29,12 @@ Page({
       const res = await api.getHistory();
       if (res.code === 200) {
         // 格式化时间
-        const history = (res.data || []).map(item => ({
-          ...item,
-          bankLogoUrl: app.getImageUrl(item.bankLogoUrl),
-          createdAt: util.relativeTime(item.createdAt)
-        }));
+        const history = (res.data || []).map(item => {
+          const obj = Object.assign({}, item);
+          obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
+          obj.createdAt = util.relativeTime(item.createdAt);
+          return obj;
+        });
         this.setData({ history });
       }
     } catch (err) {

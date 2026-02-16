@@ -92,15 +92,16 @@ Page({
       const res = await api.getProducts(params);
 
       if (res.code === 200) {
-        const newProducts = (res.data.records || []).map(item => ({
-          ...item,
-          bankLogoUrl: app.getImageUrl(item.bankLogoUrl),
-          tags: item.tags ? item.tags.split(',') : [],
-          isFavorited: false
-        }));
+        const newProducts = (res.data.records || []).map(item => {
+          const obj = Object.assign({}, item);
+          obj.bankLogoUrl = app.getImageUrl(item.bankLogoUrl);
+          obj.tags = item.tags ? item.tags.split(',') : [];
+          obj.isFavorited = false;
+          return obj;
+        });
 
         this.setData({
-          products: loadMore ? [...this.data.products, ...newProducts] : newProducts,
+          products: loadMore ? this.data.products.concat(newProducts) : newProducts,
           hasMore: res.data.records && res.data.records.length >= this.data.size
         });
       }
@@ -172,7 +173,7 @@ Page({
       }
 
       // 更新状态
-      const products = [...this.data.products];
+      const products = this.data.products.slice();
       products[index].isFavorited = !products[index].isFavorited;
       this.setData({ products });
     } catch (err) {
@@ -194,10 +195,11 @@ Page({
       const res = await api.getFavorites();
       if (res.code === 200) {
         const favoriteIds = new Set((res.data || []).map(item => item.productId));
-        const updatedProducts = products.map(item => ({
-          ...item,
-          isFavorited: favoriteIds.has(item.id)
-        }));
+        const updatedProducts = products.map(item => {
+          const obj = Object.assign({}, item);
+          obj.isFavorited = favoriteIds.has(item.id);
+          return obj;
+        });
         this.setData({ products: updatedProducts });
       }
     } catch (err) {
