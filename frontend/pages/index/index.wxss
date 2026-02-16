@@ -18,6 +18,8 @@
 
 .filter-scroll {
   flex: 1;
+  white-space: nowrap;
+  padding: 0 20rpx;
 }
 
 .refresh-btn {
@@ -41,11 +43,6 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.filter-scroll {
-  white-space: nowrap;
-  padding: 0 20rpx;
 }
 
 .filter-item {
