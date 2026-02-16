@@ -1,7 +1,7 @@
 // app.js
 App({
   globalData: {
-    baseUrl: 'https://43.165.166.249',
+    baseUrl: 'https://43.165.166.249:8443',
     token: '',
     userInfo: null
   },
