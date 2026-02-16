@@ -2,14 +2,20 @@
 <view class="container">
   <!-- 银行筛选 Tab -->
   <view class="filter-bar">
+    <!-- 刷新按钮 - 固定不动 -->
+    <view class="refresh-btn {{loading ? 'refreshing' : ''}}" bindtap="onRefreshTap">
+      <text>{{loading ? '刷新中' : '刷新'}}</text>
+    </view>
+    <!-- 全部按钮 - 固定不动 -->
+    <view
+      class="filter-item {{currentBankId === 0 ? 'active' : ''}}"
+      bindtap="onBankChange"
+      data-id="0"
+    >
+      全部
+    </view>
+    <!-- 其他银行 - 可滑动 -->
     <scroll-view scroll-x class="filter-scroll">
-      <view
-        class="filter-item {{currentBankId === 0 ? 'active' : ''}}"
-        bindtap="onBankChange"
-        data-id="0"
-      >
-        全部
-      </view>
       <view
         class="filter-item {{currentBankId === item.id ? 'active' : ''}}"
         wx:for="{{banks}}"
@@ -20,10 +26,6 @@
         {{item.name}}
       </view>
     </scroll-view>
-    <!-- 刷新按钮 -->
-    <view class="refresh-btn {{loading ? 'refreshing' : ''}}" bindtap="onRefreshTap">
-      <text>{{loading ? '刷新中' : '刷新'}}</text>
-    </view>
   </view>
 
   <!-- 产品列表 -->
