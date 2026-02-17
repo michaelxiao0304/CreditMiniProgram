@@ -555,11 +555,13 @@
 
                 const toggleProductStatus = async (product) => {
                     const newStatus = product.status === 1 ? 0 : 1;
-                    await fetch(`${API_BASE}/products/${product.id}`, {
+                    const res = await fetch(`${API_BASE}/products/${product.id}`, {
                         method: 'PUT',
                         headers: { ...getHeaders(), 'Content-Type': 'application/json' },
                         body: JSON.stringify({ status: newStatus })
                     });
+                    const data = await res.json();
+                    if (!checkAuth(data)) return;
                     loadProducts();
                 };
 
