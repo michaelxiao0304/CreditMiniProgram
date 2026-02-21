@@ -158,21 +158,30 @@ public class UserService {
      * 绑定手机号
      */
     public String bindPhone(String openid, String encryptedData, String iv) {
-        logger.info("开始绑定手机号, openid={}", openid);
+        logger.info("========== 开始绑定手机号 ==========");
+        logger.info("openid={}, encryptedData长度={}, iv长度={}",
+                openid, encryptedData != null ? encryptedData.length() : 0,
+                iv != null ? iv.length() : 0);
 
         // 参数校验
         if (encryptedData == null || encryptedData.isEmpty()) {
-            logger.error("encryptedData 为空");
+            logger.error("encryptedData 为空或null");
             throw new RuntimeException("加密数据不能为空");
         }
         if (iv == null || iv.isEmpty()) {
-            logger.error("iv 为空");
+            logger.error("iv 为空或null");
             throw new RuntimeException("加密向量不能为空");
         }
 
         // 1. 从 Redis 获取 session_key
         String redisKey = SESSION_KEY_PREFIX + openid;
+        logger.info("尝试从Redis获取session_key, key={}", redisKey);
+
         Object sessionKeyObj = redisTemplate.opsForValue().get(redisKey);
+
+        logger.info("Redis查询结果: sessionKeyObj={}, 类型={}",
+                sessionKeyObj != null ? sessionKeyObj.toString().substring(0, Math.min(20, sessionKeyObj.toString().length())) + "..." : "null",
+                sessionKeyObj != null ? sessionKeyObj.getClass().getName() : "null");
 
         // 处理 Redis 序列化问题，确保转换为 String
         String sessionKey = null;
@@ -186,28 +195,35 @@ public class UserService {
         }
 
         if (sessionKey == null || sessionKey.isEmpty()) {
-            logger.error("session_key 已过期或不存在, openid={}, redisKey={}", openid, redisKey);
+            logger.error("session_key 为空或null, openid={}, redisKey={}", openid, redisKey);
+            // 检查 Redis 中是否有这个 key
+            Boolean exists = redisTemplate.hasKey(redisKey);
+            logger.info("Redis key是否存在: {}", exists);
             throw new RuntimeException("登录已过期，请重新登录后再试");
         }
 
-        logger.info("从 Redis 获取 session_key 成功, key={}", redisKey);
+        logger.info("从 Redis 获取 session_key 成功, sessionKey长度={}", sessionKey.length());
 
         try {
             // 2. 解密微信数据
+            logger.info("开始解密, sessionKey长度={}, encryptedData长度={}, iv长度={}",
+                    sessionKey.length(), encryptedData.length(), iv.length());
             String decryptedJson = weChatUtil.decryptPhoneNumber(sessionKey, encryptedData, iv);
+            logger.info("解密后JSON: {}", decryptedJson);
 
             // 3. 提取手机号
             String phoneNumber = weChatUtil.extractPhoneNumber(decryptedJson);
-
-            logger.info("微信手机号解密成功, openid={}, 手机号前3位={}", openid, phoneNumber.substring(0, 3));
+            logger.info("提取到手机号: {}", phoneNumber);
 
             // 4. 加密存储到数据库
             String encryptedPhone = cryptoUtil.encrypt(phoneNumber);
+            logger.info("手机号加密成功, 加密后长度={}", encryptedPhone.length());
             saveOrUpdateUserPhone(openid, encryptedPhone);
 
             // 5. 返回脱敏后的手机号
             String maskedPhone = cryptoUtil.maskPhone(phoneNumber);
             logger.info("手机号绑定完成, openid={}, 脱敏手机号={}", openid, maskedPhone);
+            logger.info("========== 绑定手机号结束 ==========");
 
             return maskedPhone;
 
