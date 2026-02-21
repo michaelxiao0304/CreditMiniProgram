@@ -10,7 +10,7 @@ A WeChat mini-program for displaying loan product information with a Spring Boot
 
 ```
 CreditMiniProgram/
-├── backend/           # Spring Boot 3.2 REST API
+├── backend/           # Spring Boot 3.2 REST API (port 8080)
 │   └── src/main/java/com/credit/miniapp/
 │       ├── controller/   # REST endpoints (user & admin APIs)
 │       ├── service/      # Business logic
@@ -20,6 +20,16 @@ CreditMiniProgram/
 │       ├── config/      # Spring configuration
 │       ├── security/    # JWT authentication
 │       └── util/        # Utilities (JWT, crypto)
+├── admin-backend/     # Spring Boot 3.2 Admin Panel API (port 8081)
+│   └── src/main/java/com/credit/admin/
+│       ├── controller/   # Admin management APIs
+│       ├── service/      # Business logic
+│       ├── repository/   # MyBatis Plus data access
+│       ├── entity/       # Data models
+│       ├── dto/         # Data transfer objects
+│       ├── config/      # JWT interceptors
+│       └── util/        # Utilities (JWT, crypto)
+├── admin/             # Static HTML admin panel frontend
 ├── frontend/          # WeChat mini-program (native)
 │   ├── pages/
 │   │   ├── index/    # Product list with filters
@@ -38,15 +48,27 @@ CreditMiniProgram/
 
 ## Common Commands
 
-### Backend
+### Backend (User Mini-program API)
 ```bash
 # Build
 cd backend && mvn clean package -DskipTests
 
 # Run locally (requires MySQL & Redis)
 java -jar target/miniapp-backend-1.0.0.jar
+```
 
-# Run with Docker
+### Admin Backend (Management Panel API)
+```bash
+# Build
+cd admin-backend && mvn clean package -DskipTests
+
+# Run locally (requires MySQL)
+java -jar target/admin-backend-1.0.0.jar
+# Runs on port 8081
+```
+
+### Run with Docker
+```bash
 cd /home/ubuntu/Code/CreditMiniProgram
 docker-compose up -d
 ```
@@ -68,11 +90,12 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_passwo
 - `jwt.secret` - JWT signing key (change in production)
 - `crypto.key` - 16-character AES encryption key
 
-### API Endpoints (Port 8080)
-- User: `/api/products`, `/api/banks`, `/api/consultant/{productId}`
-- Auth: `/api/auth/login`
-- User Data: `/api/favorites`, `/api/history`, `/api/feedback`
-- Admin: `/api/admin/products`, `/api/admin/banks`, `/api/admin/consultants`
+### API Endpoints
+- **User API (port 8080)**: `/api/products`, `/api/banks`, `/api/consultant/{productId}`
+- **Auth (port 8080)**: `/api/auth/login`
+- **User Data (port 8080)**: `/api/favorites`, `/api/history`, `/api/feedback`
+- **Admin API (port 8080)**: `/api/admin/products`, `/api/admin/banks`, `/api/admin/consultants`
+- **Admin Panel API (port 8081)**: `/admin-api/auth`, `/admin-api/products`, `/admin-api/banks`, `/admin-api/consultants`, `/admin-api/feedback`
 - Docs: `http://localhost:8080/swagger-ui.html`
 
 ## Development Notes
@@ -81,6 +104,8 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_passwo
 - User APIs for favorites/history require JWT token in Authorization header
 - Phone numbers are encrypted with AES in database, returned masked (e.g., `138****5678`)
 - Use `@TableField(exist = false)` for non-database fields in MyBatis Plus entities
+- **Two separate backends**: `backend/` (port 8080) serves user mini-program; `admin-backend` (port 8081) serves admin panel
+- The `admin/` directory contains static HTML served by the admin-backend or deployed separately
 
 ## WeChat Mini-Program Compatibility
 
@@ -118,5 +143,6 @@ var list = items.map(function(item) {
 
 ## Build Outputs to Ignore
 - `backend/target/` - Maven build artifacts
+- `admin-backend/target/` - Maven build artifacts
 - `*.jar` - Compiled Java packages
-- `frontend/node_modules/` - NPM dependencies
+- `frontend/node_modules/` - NPM dependencies (if added)
