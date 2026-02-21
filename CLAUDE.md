@@ -10,7 +10,7 @@ A WeChat mini-program for displaying loan product information with a Spring Boot
 
 ```
 CreditMiniProgram/
-├── backend/           # Spring Boot 3.2 REST API (port 8080)
+├── backend/           # Spring Boot 3.2 REST API (port 8443, HTTPS)
 │   └── src/main/java/com/credit/miniapp/
 │       ├── controller/   # REST endpoints (user & admin APIs)
 │       ├── service/      # Business logic
@@ -54,6 +54,7 @@ CreditMiniProgram/
 cd backend && mvn clean package -DskipTests
 
 # Run locally (requires MySQL & Redis)
+# Note: Runs on port 8443 with HTTPS enabled (SSL certificate in backend/ssl/)
 java -jar target/miniapp-backend-1.0.0.jar
 ```
 
@@ -91,12 +92,12 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_passwo
 - `crypto.key` - 16-character AES encryption key
 
 ### API Endpoints
-- **User API (port 8080)**: `/api/products`, `/api/banks`, `/api/consultant/{productId}`
-- **Auth (port 8080)**: `/api/auth/login`
-- **User Data (port 8080)**: `/api/favorites`, `/api/history`, `/api/feedback`
-- **Admin API (port 8080)**: `/api/admin/products`, `/api/admin/banks`, `/api/admin/consultants`
-- **Admin Panel API (port 8081)**: `/admin-api/auth`, `/admin-api/products`, `/admin-api/banks`, `/admin-api/consultants`, `/admin-api/feedback`
-- Docs: `http://localhost:8080/swagger-ui.html`
+- **User API (port 8443, HTTPS)**: `/api/products`, `/api/banks`, `/api/consultant/{productId}`
+- **Auth (port 8443, HTTPS)**: `/api/auth/login`
+- **User Data (port 8443, HTTPS)**: `/api/favorites`, `/api/history`, `/api/feedback`
+- **Admin API (port 8443, HTTPS)**: `/api/admin/products`, `/api/admin/banks`, `/api/admin/consultants`
+- **Admin Panel API (port 8081, HTTP)**: `/admin-api/auth`, `/admin-api/products`, `/admin-api/banks`, `/admin-api/consultants`, `/admin-api/feedback`
+- Docs: `https://localhost:8443/swagger-ui.html`
 
 ## Development Notes
 
@@ -104,8 +105,9 @@ sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_passwo
 - User APIs for favorites/history require JWT token in Authorization header
 - Phone numbers are encrypted with AES in database, returned masked (e.g., `138****5678`)
 - Use `@TableField(exist = false)` for non-database fields in MyBatis Plus entities
-- **Two separate backends**: `backend/` (port 8080) serves user mini-program; `admin-backend` (port 8081) serves admin panel
+- **Two separate backends**: `backend/` (port 8443, HTTPS) serves user mini-program; `admin-backend` (port 8081) serves admin panel
 - The `admin/` directory contains static HTML served by the admin-backend or deployed separately
+- SSL certificates stored in `backend/ssl/` (self-signed for development)
 
 ## WeChat Mini-Program Compatibility
 
@@ -143,6 +145,7 @@ var list = items.map(function(item) {
 
 ## Build Outputs to Ignore
 - `backend/target/` - Maven build artifacts
+- `backend/ssl/` - SSL certificates (sensitive)
 - `admin-backend/target/` - Maven build artifacts
 - `*.jar` - Compiled Java packages
 - `frontend/node_modules/` - NPM dependencies (if added)
