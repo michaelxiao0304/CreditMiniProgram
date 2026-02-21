@@ -258,9 +258,13 @@ public class UserService {
                 appid, secret, code
         );
 
+        logger.info("调用微信API获取openid, url={}", url.replace(secret, "***"));
+
         try {
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.getForObject(url, String.class);
+
+            logger.info("微信API响应: {}", response);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(response);
@@ -268,11 +272,14 @@ public class UserService {
             if (jsonNode.has("openid")) {
                 String openid = jsonNode.get("openid").asText();
                 String sessionKey = jsonNode.has("session_key") ? jsonNode.get("session_key").asText() : "";
+                logger.info("微信登录成功, openid={}, sessionKey长度={}", openid, sessionKey != null ? sessionKey.length() : 0);
                 return new String[]{openid, sessionKey};
             } else {
+                logger.error("微信API返回无openid: {}", response);
                 throw new RuntimeException("获取openid失败: " + response);
             }
         } catch (Exception e) {
+            logger.error("微信API调用失败: {}", e.getMessage());
             // 开发环境使用模拟openid
             return new String[]{"mock_openid_" + System.currentTimeMillis(), ""};
         }

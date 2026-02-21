@@ -42,8 +42,8 @@ jwt:
 
 # 微信小程序配置
 wechat:
-  appid: your-appid
-  secret: your-secret
+  appid: wx7590921e657eb892
+  secret: 56a21b5cd130530693029998125edf9c
 
 # 加密配置
 crypto:
