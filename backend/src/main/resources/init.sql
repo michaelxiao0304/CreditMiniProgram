@@ -81,6 +81,18 @@ CREATE TABLE IF NOT EXISTS admin_user (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员用户表';
 
+-- 用户表
+CREATE TABLE IF NOT EXISTS user (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    openid VARCHAR(100) NOT NULL UNIQUE COMMENT '用户openid',
+    nickname VARCHAR(100) COMMENT '昵称',
+    avatar_url VARCHAR(255) COMMENT '头像URL',
+    phone_encrypted VARCHAR(255) COMMENT '手机号（加密存储）',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_openid (openid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+
 -- 插入初始数据
 INSERT INTO bank (name, logo_url, status) VALUES
 ('中国银行', '/images/banks/boc.png', 1),
