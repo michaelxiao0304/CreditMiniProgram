@@ -172,7 +172,18 @@ public class UserService {
 
         // 1. 从 Redis 获取 session_key
         String redisKey = SESSION_KEY_PREFIX + openid;
-        String sessionKey = (String) redisTemplate.opsForValue().get(redisKey);
+        Object sessionKeyObj = redisTemplate.opsForValue().get(redisKey);
+
+        // 处理 Redis 序列化问题，确保转换为 String
+        String sessionKey = null;
+        if (sessionKeyObj != null) {
+            if (sessionKeyObj instanceof String) {
+                sessionKey = (String) sessionKeyObj;
+            } else {
+                // 如果是其他类型（如 LinkedHashMap），尝试转换为 String
+                sessionKey = sessionKeyObj.toString();
+            }
+        }
 
         if (sessionKey == null || sessionKey.isEmpty()) {
             logger.error("session_key 已过期或不存在, openid={}, redisKey={}", openid, redisKey);
