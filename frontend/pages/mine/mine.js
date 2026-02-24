@@ -54,24 +54,14 @@ Page({
     });
   },
 
-  // 获取手机号
+  // 获取手机号（自动降级方案）
   async onGetPhoneNumber(e) {
     // 打印详细错误信息，方便调试
     console.log('getPhoneNumber result:', e.detail);
 
     if (e.detail.errMsg !== 'getPhoneNumber:ok') {
-      var errorMsg = '需要授权获取手机号';
-      // 根据不同错误给出更明确的提示
-      if (e.detail.errMsg && e.detail.errMsg.indexOf('cancel') !== -1) {
-        errorMsg = '已取消授权';
-      } else if (e.detail.errMsg && e.detail.errMsg.indexOf('deny') !== -1) {
-        errorMsg = '已拒绝授权获取手机号';
-      }
-      wx.showToast({
-        title: errorMsg,
-        icon: 'none',
-        duration: 2000
-      });
+      // 用户拒绝或取消，提示手动输入
+      this.showPhoneInputDialog();
       return;
     }
 
@@ -79,10 +69,8 @@ Page({
     var iv = e.detail.iv;
 
     if (!encryptedData) {
-      wx.showToast({
-        title: '获取数据失败，请重试',
-        icon: 'none'
-      });
+      // 数据为空，可能权限不足，降级为手动输入
+      this.showPhoneInputDialog();
       return;
     }
 
@@ -101,19 +89,65 @@ Page({
           icon: 'success'
         });
       } else {
-        wx.showToast({
-          title: res.msg || '绑定失败',
-          icon: 'none'
-        });
+        // 后端处理失败，降级为手动输入
+        this.showPhoneInputDialog();
       }
     } catch (err) {
       wx.hideLoading();
       console.error('绑定手机号失败', err);
-      wx.showToast({
-        title: '绑定失败，请重试',
-        icon: 'none'
-      });
+      // 网络错误或权限不足，降级为手动输入
+      this.showPhoneInputDialog();
     }
+  },
+
+  // 显示手机号输入框（降级方案）
+  showPhoneInputDialog() {
+    var that = this;
+    wx.showModal({
+      title: '绑定手机号',
+      content: '无法自动获取手机号，请手动输入',
+      confirmText: '手动输入',
+      cancelText: '取消',
+      success: function(res) {
+        if (res.confirm) {
+          that.onInputPhoneNumber();
+        }
+      }
+    });
+  },
+
+  // 手动输入手机号
+  onInputPhoneNumber() {
+    var that = this;
+    wx.showModal({
+      title: '绑定手机号',
+      placeholderText: '请输入11位手机号',
+      editable: true,
+      success: function(res) {
+        if (res.confirm && res.content) {
+          var phoneNumber = res.content.trim();
+
+          // 验证手机号格式
+          if (!/^1\d{10}$/.test(phoneNumber)) {
+            wx.showToast({
+              title: '手机号格式错误',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 保存手机号
+          wx.setStorageSync('phoneNumber', phoneNumber);
+          that.setData({
+            phoneNumber: phoneNumber
+          });
+          wx.showToast({
+            title: '手机号绑定成功',
+            icon: 'success'
+          });
+        }
+      }
+    });
   },
 
   // 选择头像
