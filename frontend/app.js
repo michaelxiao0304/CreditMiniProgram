@@ -1,7 +1,7 @@
 // app.js
 App({
   globalData: {
-    baseUrl: 'https://1ammoss.com',
+    baseUrl: 'https://1ammoss.com/credit',
     token: '',
     userInfo: null
   },
