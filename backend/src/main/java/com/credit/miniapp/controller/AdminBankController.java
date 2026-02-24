@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/credit/api/admin/banks")
+@RequestMapping("/api/admin/banks")
 public class AdminBankController {
 
     @Autowired

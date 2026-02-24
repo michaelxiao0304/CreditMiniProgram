@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/credit/api/admin/products")
+@RequestMapping("/api/admin/products")
 public class AdminProductController {
 
     @Autowired
