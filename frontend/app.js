@@ -2,6 +2,7 @@
 App({
   globalData: {
     baseUrl: 'https://1ammoss.com/credit',
+    imageBaseUrl: 'https://1ammoss.com',
     token: '',
     userInfo: null
   },
@@ -10,7 +11,7 @@ App({
   getImageUrl: function(path) {
     if (!path) return '';
     if (path.indexOf('http') === 0) return path;
-    return this.globalData.baseUrl + path;
+    return this.globalData.imageBaseUrl + path;
   },
 
   onLaunch: function() {
