@@ -29,6 +29,19 @@
   border: none;
 }
 
+/* 头像按钮 - 用于选择头像 */
+.avatar-btn {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  line-height: normal;
+}
+
+.avatar-btn::after {
+  border: none;
+}
+
 .avatar {
   width: 120rpx;
   height: 120rpx;
@@ -41,9 +54,14 @@
   color: #fff;
 }
 
-.nickname {
+.nickname, .nickname-edit {
   font-size: 36rpx;
   font-weight: 600;
+}
+
+/* 可点击编辑的昵称 */
+.nickname-edit {
+  display: inline-block;
 }
 
 .phone-bind-btn {

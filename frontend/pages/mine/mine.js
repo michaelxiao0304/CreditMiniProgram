@@ -56,16 +56,35 @@ Page({
 
   // 获取手机号
   async onGetPhoneNumber(e) {
+    // 打印详细错误信息，方便调试
+    console.log('getPhoneNumber result:', e.detail);
+
     if (e.detail.errMsg !== 'getPhoneNumber:ok') {
+      var errorMsg = '需要授权获取手机号';
+      // 根据不同错误给出更明确的提示
+      if (e.detail.errMsg && e.detail.errMsg.indexOf('cancel') !== -1) {
+        errorMsg = '已取消授权';
+      } else if (e.detail.errMsg && e.detail.errMsg.indexOf('deny') !== -1) {
+        errorMsg = '已拒绝授权获取手机号';
+      }
       wx.showToast({
-        title: '需要授权获取手机号',
-        icon: 'none'
+        title: errorMsg,
+        icon: 'none',
+        duration: 2000
       });
       return;
     }
 
     var encryptedData = e.detail.encryptedData;
     var iv = e.detail.iv;
+
+    if (!encryptedData) {
+      wx.showToast({
+        title: '获取数据失败，请重试',
+        icon: 'none'
+      });
+      return;
+    }
 
     wx.showLoading({ title: '绑定中...' });
     try {
@@ -81,15 +100,75 @@ Page({
           title: '手机号绑定成功',
           icon: 'success'
         });
+      } else {
+        wx.showToast({
+          title: res.msg || '绑定失败',
+          icon: 'none'
+        });
       }
     } catch (err) {
       wx.hideLoading();
       console.error('绑定手机号失败', err);
       wx.showToast({
-        title: '绑定失败',
+        title: '绑定失败，请重试',
         icon: 'none'
       });
     }
+  },
+
+  // 选择头像
+  onChooseAvatar(e) {
+    var avatarUrl = e.detail.avatarUrl;
+    if (!avatarUrl) {
+      return;
+    }
+
+    var that = this;
+    wx.showLoading({ title: '保存中...' });
+
+    // 更新本地数据
+    var userInfo = this.data.userInfo || {};
+    userInfo.avatarUrl = avatarUrl;
+    wx.setStorageSync('userInfo', userInfo);
+
+    this.setData({
+      userInfo: userInfo
+    });
+
+    wx.hideLoading();
+    wx.showToast({
+      title: '头像已更新',
+      icon: 'success'
+    });
+  },
+
+  // 编辑昵称
+  onEditNickname() {
+    var that = this;
+    var currentNickname = this.data.userInfo ? (this.data.userInfo.nickName || this.data.userInfo.nickname || '') : '';
+
+    wx.showModal({
+      title: '修改昵称',
+      placeholderText: '请输入昵称',
+      content: currentNickname,
+      editable: true,
+      success: function(res) {
+        if (res.confirm && res.content && res.content.trim()) {
+          var userInfo = that.data.userInfo || {};
+          userInfo.nickname = res.content.trim();
+          wx.setStorageSync('userInfo', userInfo);
+
+          that.setData({
+            userInfo: userInfo
+          });
+
+          wx.showToast({
+            title: '昵称已更新',
+            icon: 'success'
+          });
+        }
+      }
+    });
   },
 
   // 加载收藏数量

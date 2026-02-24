@@ -3,9 +3,13 @@
   <!-- 用户信息区 -->
   <view class="user-section">
     <view class="user-info" wx:if="{{isLoggedIn}}">
-      <image class="avatar" src="{{userInfo.avatarUrl || userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <!-- 点击头像选择新头像 -->
+      <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="avatar" src="{{userInfo.avatarUrl || userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      </button>
       <view class="user-detail">
-        <view class="nickname">{{userInfo.nickName || userInfo.nickname || '用户'}}</view>
+        <!-- 点击昵称编辑 -->
+        <view class="nickname-edit" bindtap="onEditNickname">{{userInfo.nickName || userInfo.nickname || '点击设置昵称'}}</view>
         <!-- 手机号绑定按钮 -->
         <button class="phone-bind-btn" wx:if="{{!phoneNumber}}" open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber">
           点击绑定手机号
