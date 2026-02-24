@@ -49,6 +49,8 @@ App({
   // 请求封装
   request: function(options) {
     var app = this;
+    var isRetry = options._retry || false;
+
     return new Promise(function(resolve, reject) {
       var header = options.header || {};
 
@@ -71,13 +73,32 @@ App({
           if (res.data.code === 200) {
             resolve(res.data);
           } else if (res.data.code === 401) {
-            // 未授权，清除登录状态
-            app.clearLogin();
-            wx.showToast({
-              title: '请先登录',
-              icon: 'none'
-            });
-            reject(res.data);
+            // 未授权，尝试自动登录
+            if (!isRetry) {
+              app.autoLogin(function(success) {
+                if (success) {
+                  // 登录成功，重试请求
+                  options._retry = true;
+                  app.request(options).then(resolve).catch(reject);
+                } else {
+                  // 登录失败，清除登录状态
+                  app.clearLogin();
+                  wx.showToast({
+                    title: '请先登录',
+                    icon: 'none'
+                  });
+                  reject(res.data);
+                }
+              });
+            } else {
+              // 重试仍然失败
+              app.clearLogin();
+              wx.showToast({
+                title: '请先登录',
+                icon: 'none'
+              });
+              reject(res.data);
+            }
           } else {
             wx.showToast({
               title: res.data.msg || '请求失败',
@@ -94,6 +115,48 @@ App({
           reject(err);
         }
       });
+    });
+  },
+
+  // 自动登录
+  autoLogin: function(callback) {
+    var app = this;
+    var userInfo = wx.getStorageSync('userInfo');
+
+    if (!userInfo) {
+      callback(false);
+      return;
+    }
+
+    // 获取微信登录 code
+    wx.login({
+      success: function(loginRes) {
+        wx.request({
+          url: app.globalData.baseUrl + '/api/auth/login',
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json'
+          },
+          data: {
+            code: loginRes.code,
+            userInfo: JSON.stringify(userInfo)
+          },
+          success: function(res) {
+            if (res.data.code === 200) {
+              app.setToken(res.data.data.token);
+              callback(true);
+            } else {
+              callback(false);
+            }
+          },
+          fail: function() {
+            callback(false);
+          }
+        });
+      },
+      fail: function() {
+        callback(false);
+      }
     });
   }
 })
