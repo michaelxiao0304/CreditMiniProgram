@@ -172,12 +172,13 @@ Page({
     wx.showModal({
       title: '提示',
       content: '确定要退出登录吗？',
-      success: function(res) {
+      success: (res) => {
         if (res.confirm) {
           app.clearLogin();
           this.setData({
             isLoggedIn: false,
             userInfo: null,
+            phoneNumber: null,
             favoritesCount: 0
           });
           wx.showToast({
